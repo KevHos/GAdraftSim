@@ -29,5 +29,6 @@ Noch zu tun:
 -Möglichkeit für Spieler, nach dem Draft ihre Deckliste als Textdatei zu exportieren oder ins Clipboard zu kopieren.<br>
 -Entwicklung von Schnittstellen zu anderen Websites, um Decks dort zu speichern (z. B. shoutatyourdecks).<br>
 
+!(../mainDokumentation/Screenshots/Draft2.PNG)
 !(/Dokumentation/Screenshots/Draft2.PNG)
 !(/Dokumentation/Screenshots/DraftEnd.PNG)
