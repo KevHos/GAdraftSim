@@ -9,7 +9,7 @@ Dieses Projekt ist ein persönliches Hobby, das ich in meiner Freizeit neben der
 
 Bereits umgesetzt:
 
--API integriert, um alle Karten des Spiels in eine Datenbank zu importieren.
+-API integriert, um alle Karten des Spiels in eine Datenbank zu importieren.<br>
 -Zufällige Karten anhand von Edition und Seltenheit aus der Datenbank abrufbar gemacht.
 -Booster und Karten mit eindeutigen IDs versehen.
 -Gestaltung einer Website für den eigentlichen Draft-Prozess.
