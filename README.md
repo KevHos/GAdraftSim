@@ -7,6 +7,8 @@ Ein Draft in einem Sammelkartenspiel ist ein Spielmodus, bei dem Spieler aus ein
 
 Dieses Projekt ist ein persönliches Hobby, das ich in meiner Freizeit neben der Schule kontinuierlich weiterentwickle. Zu Beginn hatte ich keinerlei Erfahrung mit Technologien wie React, Socket.IO, MySQL sowie Frontend- und Backend-Entwicklung. Auch wenn ich immer noch viel zu lernen habe, stellt dieses Projekt für mich eine spannende und motivierende Herausforderung dar, die ich mit Leidenschaft verfolge.
 
+![Draft](https://raw.githubusercontent.com/KevHos/GAdraftSim/refs/heads/main/Dokumentation/Screenshots/Draft2.png?token=GHSAT0AAAAAAC3OP6L2ORS7VSFT345BRZ6AZ2QX56A)
+
 Bereits umgesetzt:
 
 -API integriert, um alle Karten des Spiels in eine Datenbank zu importieren.<br>
@@ -29,7 +31,5 @@ Noch zu tun:
 -Möglichkeit für Spieler, nach dem Draft ihre Deckliste als Textdatei zu exportieren oder ins Clipboard zu kopieren.<br>
 -Entwicklung von Schnittstellen zu anderen Websites, um Decks dort zu speichern (z. B. shoutatyourdecks).<br>
 
-!(../mainDokumentation/Screenshots/Draft2.PNG)
-![Draft](https://raw.githubusercontent.com/KevHos/GAdraftSim/refs/heads/main/Dokumentation/Screenshots/Draft2.png?token=GHSAT0AAAAAAC3OP6L2ORS7VSFT345BRZ6AZ2QX56A)
 ![Deck am Ende des Drafts](https://github.com/KevHos/GAdraftSim/blob/main/Dokumentation/Screenshots/DraftEnd.png)
 ![Lobby](https://github.com/KevHos/GAdraftSim/blob/main/Dokumentation/Screenshots/Lobby.png?raw=true)
