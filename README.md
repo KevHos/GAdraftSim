@@ -5,11 +5,13 @@ GAdraftSim ist eine Website, die einen Draft-Simulator für ein weniger bekannte
 Was ist ein Draft?<br>
 Ein Draft in einem Sammelkartenspiel ist ein Spielmodus, bei dem Spieler aus einer begrenzten Auswahl an Karten ein Deck zusammenstellen, statt ein vorgefertigtes Deck zu nutzen. Dabei öffnet jeder Spieler eine Kartenpackung, wählt eine Karte daraus, gibt die übrigen Karten an den nächsten Spieler weiter und wiederholt diesen Prozess, bis alle Karten verteilt sind.
 
+![Draft](https://raw.githubusercontent.com/KevHos/GAdraftSim/refs/heads/main/Dokumentation/Screenshots/Draft2.png?token=GHSAT0AAAAAAC3OP6L2ORS7VSFT345BRZ6AZ2QX56A)
+
 Dieses Projekt ist ein persönliches Hobby, das ich in meiner Freizeit neben der Schule kontinuierlich weiterentwickle. Zu Beginn hatte ich keinerlei Erfahrung mit Technologien wie React, Socket.IO, MySQL sowie Frontend- und Backend-Entwicklung. Auch wenn ich immer noch viel zu lernen habe, stellt dieses Projekt für mich eine spannende und motivierende Herausforderung dar, die ich mit Leidenschaft verfolge.
 
 Bereits umgesetzt:
 
--API integriert, um alle Karten des Spiels in eine Datenbank zu importieren.<br>
+-Fetch der API des Herstellers, um alle Karten des Spiels in eine Datenbank zu importieren.<br>
 -Zufällige Karten anhand von Edition und Seltenheit aus der Datenbank abrufbar gemacht.<br>
 -Booster und Karten mit eindeutigen IDs versehen.<br>
 -Gestaltung einer Website für den eigentlichen Draft-Prozess.<br>
@@ -29,5 +31,5 @@ Noch zu tun:
 -Möglichkeit für Spieler, nach dem Draft ihre Deckliste als Textdatei zu exportieren oder ins Clipboard zu kopieren.<br>
 -Entwicklung von Schnittstellen zu anderen Websites, um Decks dort zu speichern (z. B. shoutatyourdecks).<br>
 
-!(/Dokumentation/Screenshots/Draft2.PNG)
-!(/Dokumentation/Screenshots/DraftEnd.PNG)
+![Deck am Ende des Drafts](https://github.com/KevHos/GAdraftSim/blob/main/Dokumentation/Screenshots/DraftEnd.png)
+![Lobby](https://github.com/KevHos/GAdraftSim/blob/main/Dokumentation/Screenshots/Lobby.png?raw=true)
