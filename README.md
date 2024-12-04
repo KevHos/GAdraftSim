@@ -30,5 +30,6 @@ Noch zu tun:
 -Entwicklung von Schnittstellen zu anderen Websites, um Decks dort zu speichern (z. B. shoutatyourdecks).<br>
 
 !(../mainDokumentation/Screenshots/Draft2.PNG)
-!(https://raw.githubusercontent.com/KevHos/GAdraftSim/refs/heads/main/Dokumentation/Screenshots/Draft2.png?token=GHSAT0AAAAAAC3OP6L2ORS7VSFT345BRZ6AZ2QX56A)
-!(/Dokumentation/Screenshots/DraftEnd.PNG)
+![Draft](https://raw.githubusercontent.com/KevHos/GAdraftSim/refs/heads/main/Dokumentation/Screenshots/Draft2.png?token=GHSAT0AAAAAAC3OP6L2ORS7VSFT345BRZ6AZ2QX56A)
+![Deck am Ende des Drafts](https://github.com/KevHos/GAdraftSim/blob/main/Dokumentation/Screenshots/DraftEnd.png)
+![Lobby](https://github.com/KevHos/GAdraftSim/blob/main/Dokumentation/Screenshots/Lobby.png?raw=true)
