@@ -1,0 +1,38 @@
+   
+ 
+  footer {
+    background-color: #333;
+    color: #fff;
+    padding-bottom: 20px;
+    padding-top: 20px;
+    text-align: center;
+    font-size: 14px;
+    margin-top: 50px;
+    position: bottom; 
+    width: 100%;
+    bottom: 0;
+}
+.footer-container {
+    
+    padding: 0 20px;
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.footer-left, .footer-right {
+    display: flex;
+}
+
+.footer-right{
+  gap:20px;
+}
+
+a {
+    color: #ddd;
+    text-decoration: none;
+}
+a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
