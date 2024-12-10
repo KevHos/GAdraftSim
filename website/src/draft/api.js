@@ -1,7 +1,7 @@
 //Datei für die API abrufe über den Server um die Karten zu generieren und gewählte Karten an den Server/Datenbank zu senden
 
 
-const API_BASE_URL = "http://192.168.64.110:3500/api/draft";
+const API_BASE_URL = "http://localhost:3500/api/draft";
 
 
 

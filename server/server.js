@@ -27,7 +27,7 @@ const httpServer = require("http").createServer(app);
 //Cors für SocketIO Frontend in React, die komplett unabhängig vom Express Cors ist
 const options = {
   cors: {
-    origin: "http://192.168.64.110:3000/",
+    origin: "http://localhost:3000/",
     methods: ["GET", "POST"],
     credentials: true
   }
