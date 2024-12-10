@@ -1,11 +1,17 @@
+//Zusammenbau der Website über die einzelnen Komponenten
+
+
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { socket } from './utils/socket';
 
 import Header from './headandfoot/header.js';
-import Chat from './socket.chat.js';
+import Chat from './chat/socket.chat.js';
 import Footer from './headandfoot/footer.js';
 import Draft from './draft/draft.js';
+
+//Hier wird dem Server mitgeteilt, wenn ein User eine Lobby erstellt, beitritt oder verlässt.
+//Die tatsächliche Logik dafür ist im Header.js zu finden.
 
 function App() {
   const [lobbyName, setLobbyName] = useState('');

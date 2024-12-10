@@ -3,7 +3,8 @@ const app = express();
 const cors = require('cors');
 const path = require('path');
 const helmet = require('helmet');
-const mysql = require('mysql');
+
+
 
 //Erlaubt Cors in der gesamtem Expresss App
 app.use(cors())
@@ -26,14 +27,14 @@ const httpServer = require("http").createServer(app);
 //Cors für SocketIO Frontend in React, die komplett unabhängig vom Express Cors ist
 const options = {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "http://192.168.64.110:3000/",
     methods: ["GET", "POST"],
     credentials: true
   }
 };
 const io = require("socket.io")(httpServer, options);
 
-//Map um den SpielerNamen einer ID zuzuordnen
+//Map um den SpielerNamen einer ID zuzuordnen, wird mit der Datenbankintegration obsolet
 const socketToPlayer = new Map();
 //Map aller aktiven Lobbys
 const activeLobbies = new Map(); 
@@ -42,9 +43,12 @@ const activeLobbies = new Map();
 //Alle 30 Sekunden werden leere Lobbys gelöscht
 setInterval(() => {
 
-  // Check each lobby and remove empty ones
+  console.log(activeLobbies);
+  
+  
   for (const [lobbyName, lobby] of activeLobbies.entries()) {
     if (lobby.players.length === 0) {
+      DBDeleteLobby(lobbyName);
       activeLobbies.delete(lobbyName);
     }
   }
@@ -52,31 +56,37 @@ setInterval(() => {
 }, 30000);
 
 
+const { DBCreateUser, DBWriteConnectFalse, DBWriteConnectTrue, DBCreateLobby, DBDeleteLobby } = require('./Database/write/writeDatabase.js');
+
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
+  DBCreateUser(socket.id);
+
+
   socket.on("create_lobby", (data) => {
-    const { lobbyName, playerName, edition, gameMode, lobbysize, bots, boosters, timer } = data;
+    const { lobbyName, playerName, edition, gameMode, lobbySize, bots, boosters, timer} = data;
     console.log("Timestamp lobby creation:", new Date().toISOString());
+    DBCreateLobby(lobbyName, playerName, lobbySize, edition, gameMode, bots, boosters, timer);
 
     if (activeLobbies.has(lobbyName)) {
       socket.emit("lobby_error", "Lobby already exists");
       return;
     }
     //Eine Lobby hat diverse Daten, die in der Lobby gespeichert werden um den Gamestate zu überprüfen
-    //Datenbankintegration folgt irgendwann noch.
+
     const lobbyData = {
       name: lobbyName,
       host: playerName,
       edition,
       gameMode,
-      lobbysize,
+      lobbySize,
       bots,
       boosters,
       timer,
       players: []
     };
-
+ 
     //Die beiden Maps befüllen sich mit den Daten
     socketToPlayer.set(socket.id, playerName);
     activeLobbies.set(lobbyName, lobbyData);
@@ -110,7 +120,7 @@ io.on("connection", (socket) => {
 
     //Checken ob die Lobby zusammen mit Bots(Noch nicht integriert) voll ist
     const totalPlayers = lobby.players.length + parseInt(lobby.bots);
-    const targetSize = lobby.lobbysize;
+    const targetSize = lobby.lobbySize;
     console.log(totalPlayers, targetSize);
     
     //Countdown für den draft
@@ -143,6 +153,9 @@ io.on("connection", (socket) => {
     }
   });
 
+
+  //Leave und Disconnect sind derzeit noch identisch, können aber gegebenenfalls angepasst werden
+
   socket.on("leave_lobby", (data) => {
     const disconnectedPlayer = socketToPlayer.get(socket.id);
 
@@ -168,7 +181,9 @@ io.on("connection", (socket) => {
         io.to(lobbyName).emit("chat_message", `${disconnectedPlayer} disconnected`);
       }
     }
+    DBWriteConnectFalse(socket.id);
     socketToPlayer.delete(socket.id);
+    
   });
 
 
@@ -189,7 +204,7 @@ draftRouter.get('/booster', async (req, res) => {
   const playerName = req.query.currentUser;
   const lobbyName = req.query.currentLobby;
   const lobby = activeLobbies.get(lobbyName);
-  console.log(lobby);
+ 
   
   
   const booster = await generateBooster(
@@ -198,6 +213,8 @@ draftRouter.get('/booster', async (req, res) => {
     lobby.gameMode,
   );
   res.json({ booster: booster });
+  console.log("Print Inhalt des Boosters: ");
+  console.log(JSON.stringify(booster));
 });
 
 

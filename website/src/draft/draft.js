@@ -1,6 +1,9 @@
+//Das ist die Website mit der Logik für das Drafting. Die Karten werden als Divs erstellt und passend auf der Website angeordnet. 
+
+
 import React, { useEffect, useState } from "react";
 import "../styles/draft.css";
-import { fetchBooster, pickCard } from "./api"; 
+import { fetchBooster, pickCard } from "./api";
 import { socket } from '../utils/socket';
 
 
@@ -19,17 +22,26 @@ function Draft({ currentLobby, currentUser }) {
         socket.on("start_draft", () => {
             loadBooster();
         });
-    
+
         return () => {
             socket.off("start_draft");
         };
-    }, [currentUser, currentLobby]); 
-    
+    }, [socket.id, currentLobby]);
+
     async function loadBooster() {
-        const booster = await fetchBooster(currentUser, currentLobby);
+        const booster = await fetchBooster(socket.id, currentLobby);
         setCurrentBooster(booster);
+        
     }
+
     
+    useEffect(() => {
+        // Wenn die Lobby geändert wird, dann setze ich Booster, derzeitig ausgewählte Karte und den Inhalt der Boxen auf 0
+        setCurrentBooster(null);
+        setSelectedCardId(null);
+        setBoxes(Array(7).fill([]));
+    }, [currentLobby]);
+
 
     // Card selection handler
     const handleCardClick = (cardId) => {
@@ -41,32 +53,33 @@ function Draft({ currentLobby, currentUser }) {
     // Confirm pick handler
     const handleConfirmPick = async () => {
         if (!selectedCardId || !currentBooster) return;
-    
+
         try {
             // Karte abrufen
             const pickedCard = currentBooster.cards.find(card => card.card_id === selectedCardId);
-    
+
             // API-Aufruf zum Bestätigen des Picks
             await pickCard({
-                user_id: "test",
+                user_id: currentUser,
                 booster_id: currentBooster.booster_id,
                 card_id: selectedCardId,
             });
-    
+
             // Karte in die passende Box hinzufügen
             addCardToBox(pickedCard);
-    
+
             // UI aktualisieren: Entferne die Karte aus dem Booster
             setCurrentBooster((prev) => ({
                 ...prev,
                 cards: prev.cards.filter((card) => card.card_id !== selectedCardId),
+
             }));
             setSelectedCardId(null);
         } catch (error) {
             console.error("Error confirming pick:", error);
         }
     };
-    
+
     // Mit der Funktion werden die Karten sortiert und in die richtigen Boxen eingefügt
     const addCardToBox = (card) => {
         if (card.reserve === null || card.memory) {
@@ -84,7 +97,7 @@ function Draft({ currentLobby, currentUser }) {
             });
         }
     };
-    
+
 
     return (
         <div className="container_top">
@@ -101,9 +114,8 @@ function Draft({ currentLobby, currentUser }) {
                 {currentBooster?.cards.map((card) => (
                     <div
                         key={card.card_id}
-                        className={`card_div ${
-                            selectedCardId === card.card_id ? "selected" : ""
-                        }`}
+                        className={`card_div ${selectedCardId === card.card_id ? "selected" : ""
+                            }`}
                         onClick={() => handleCardClick(card.card_id)}
                     >
                         <img
@@ -122,36 +134,36 @@ function Draft({ currentLobby, currentUser }) {
             </div>
 
             <div className="bottom_container">
-    {boxes.map((boxCards, i) => (
-        <div className="small_box" id={i === 6 ? "boxnull" : `box${i}`} key={i}>
-            <div className="small_box_header">
-                <div className="small_box_header_left" id={i === 6 ? "headernulls" : `header${i}`}>
-                    <span className="variable_display" id={i === 6 ? "head_variablenull" : `head_variable${i}`}>
-                        {boxCards.length}
-                    </span>
-                </div>
-                <div className="small_box_header_text">
-                    {i === 6 ? "Materialize" : i === 5 ? "Reserve: 5+" : `Reserve: ${i}`}
-                </div>
-            </div>
-            <div className="small_box_content" style={{ height: `${(boxCards.length * 35) + 250}px` }}>
-    {boxCards.map((card, index) => (
-        <img
-            key={card.card_id}
-            className="card_pic_small"
-            src={card.picture}
-            alt={card.name}
-            style={{
-                top: `${index * 35}px`,
-                zIndex: index + 1
-            }}
-        />
-    ))}
-</div>
+                {boxes.map((boxCards, i) => (
+                    <div className="small_box" id={i === 6 ? "boxnull" : `box${i}`} key={i}>
+                        <div className="small_box_header">
+                            <div className="small_box_header_left" id={i === 6 ? "headernulls" : `header${i}`}>
+                                <span className="variable_display" id={i === 6 ? "head_variablenull" : `head_variable${i}`}>
+                                    {boxCards.length}
+                                </span>
+                            </div>
+                            <div className="small_box_header_text">
+                                {i === 6 ? "Materialize" : i === 5 ? "Reserve: 5+" : `Reserve: ${i}`}
+                            </div>
+                        </div>
+                        <div className="small_box_content" style={{ height: `${(boxCards.length * 35) + 250}px` }}>
+                            {boxCards.map((card, index) => (
+                                <img
+                                    key={card.card_id}
+                                    className="card_pic_small"
+                                    src={card.picture}
+                                    alt={card.name}
+                                    style={{
+                                        top: `${index * 35}px`,
+                                        zIndex: index + 1
+                                    }}
+                                />
+                            ))}
+                        </div>
 
-        </div>
-    ))}
-</div>
+                    </div>
+                ))}
+            </div>
 
 
         </div>

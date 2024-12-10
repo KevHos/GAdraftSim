@@ -1,6 +1,8 @@
-// Card Class
+//In diesem Dokument werden die Objekte der Booster und Karten erstellt und mit den Kartenwerten der CardDatabase befüllt.
+
+
 class Card {
-    constructor(uu_id, name, memory, reserve, element, rarity, slug_edition, card_id) {
+    constructor(uu_id, name, memory, reserve, element, rarity, slug_edition) {
         this.uu_id = uu_id;
         this.name = name;
         this.memory = memory;
@@ -9,7 +11,7 @@ class Card {
         this.rarity = rarity;
         this.slug_edition = slug_edition;
         this.picture = `https://ga-index-public.s3.us-west-2.amazonaws.com/cards/${slug_edition}.jpg`;
-        this.card_id = card_id;
+        this.card_id = uuidv4();
     }
 }
 
@@ -22,14 +24,12 @@ class BoosterPack{
     this.cards = cards;
    
     }
-
+    state = "active";
 }
 
 const mysql = require('mysql');
 const { v4: uuidv4 } = require('uuid');
 
-// Globals
-let edition = "amb";
 // Database Query Function
 async function readOutDatabase(rarity, amount) {
     const con = mysql.createConnection({
@@ -68,7 +68,6 @@ function createCard(data) {
         data.element,
         data.rarity,
         data.slug_edition,
-        uuidv4()
     );
 }
 
@@ -89,7 +88,7 @@ async function fetchCardsByRarity(rarity, count) {
 
 async function generateBooster(owner, editionbrowser, gamemode) {
 
-    console.log(owner, editionbrowser, gamemode);
+    console.log("Owner: " + owner+ " Edition: " +editionbrowser+ " Gamemode: "+ gamemode);
     
     if (gamemode == "draft") {
        common = 10;

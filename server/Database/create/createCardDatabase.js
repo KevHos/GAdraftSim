@@ -1,3 +1,5 @@
+//Dokument um die Datenbank "CardDatabase" zu erstellen. Hier wird auch die API des Herstellers
+
 class Card {
     constructor(name, memory, reserve, element, rarity, slug_edition, card_id) {
         this.name = name;
@@ -239,7 +241,7 @@ async function printToDatabase() {
                 VALUES (ID, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
             var values = [
-                card.uu_id,
+                card.card_id,
                 card.name,
                 card.memory,
                 card.reserve,

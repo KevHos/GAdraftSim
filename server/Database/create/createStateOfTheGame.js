@@ -1,3 +1,5 @@
+//Dokument um die Datenbank "State of the Game" zu erstellen
+
 async function printToDatabase() {
 
     var mysql = require('mysql');
@@ -46,19 +48,29 @@ CREATE TABLE editions (
 con.query(sql, function (err, result) {
 if (err) throw err;
 console.log("Table editions created");
-});
+})
+
+//Kann ich sicherlich noch in einen einzelnen Query umwandeln, läuft aber derzeit und muss nur einmalig aufgerufen werden
+con.query("INSERT INTO editions (edition_id) VALUES('doaalter')");
+con.query("INSERT INTO editions (edition_id) VALUES('ftca')");
+con.query("INSERT INTO editions (edition_id) VALUES('alc')");
+con.query("INSERT INTO editions (edition_id) VALUES('mrc')");
+con.query("INSERT INTO editions (edition_id) VALUES('amb')");
+
 
 
     var sql = `
     CREATE TABLE lobbys (
         lobby_id VARCHAR(255) NOT NULL, 
+        host_name VARCHAR(255),
         state ENUM('open', 'closed') NOT NULL, 
         max_players INT, 
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP, 
         edition_id VARCHAR(255), 
         gamemode VARCHAR(255), 
         bots INT, 
-        time INT, 
+        time INT,
+        boosters INT, 
         round_number INT, 
         PRIMARY KEY (lobby_id), 
         FOREIGN KEY (edition_id) REFERENCES editions(edition_id)
@@ -136,6 +148,14 @@ var sql = `
 con.query(sql, function (err, result) {
     if (err) throw err;
     console.log("Table cards created");
+});
+
+con.end((error) => {
+    if (error) {
+        console.error('Error closing MySQL connection:', error);
+        return;
+    }
+    console.log("MySQL connection closed.");
 });
 
     

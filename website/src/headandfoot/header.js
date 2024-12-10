@@ -1,3 +1,5 @@
+//Im Header werden die eingegeben daten des Users für die Lobby ausgelesen und über das Index-File an den Server geschickt.
+
 import "../styles/header.css"
 import React, { useState } from 'react';
 import { socket } from '../utils/socket';
@@ -13,13 +15,13 @@ function Header({onJoinLobby, onLeaveLobby, onCreateLobby}) {
             playerName,
             edition: document.getElementById('editions').value,
             gameMode: document.getElementById('game-mode').value,
-            lobbysize: document.getElementById('lobbysize').value,
+            lobbySize: document.getElementById('lobbysize').value,
             bots: document.getElementById('bots').value,
             boosters: document.getElementById('boosters').value,
             timer: document.getElementById('time').value
         };
-        socket.emit('create_lobby', lobbyData);
-    
+        
+        onCreateLobby(lobbyData);
         onLeaveLobby({ lobbyName, playerName });
         onJoinLobby({ lobbyName, playerName });
 

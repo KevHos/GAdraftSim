@@ -1,7 +1,8 @@
+//Datei für die Funktionalität des Chats
 
-import './styles/chat.css';
+import '../styles/chat.css';
 import {useEffect, useState} from 'react';
-import { socket } from './utils/socket';
+import { socket } from '../utils/socket';
 
 function Chat({ currentLobby, currentUser }) {
   const [message, setMessage] = useState("");
@@ -34,6 +35,7 @@ function Chat({ currentLobby, currentUser }) {
     };
   }, []);
 
+  //HTML code
   return ( 
     <div className="App">
       <h1 className="chat-header">You are in Lobby: {currentLobby}</h1>
