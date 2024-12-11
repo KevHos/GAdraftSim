@@ -13,11 +13,14 @@ Cody hat mir hier viel geholfen, da ich in React noch nicht so vertraut bin.
 Besonders die dynamisch erstellen Boxen anhand eines Arrays sind cleverere Lösungen als meine.
  */
 
-function Draft({ currentLobby, currentUser }) {
+function Draft({ currentLobby}) {
     const [currentBooster, setCurrentBooster] = useState(null);
     const [selectedCardId, setSelectedCardId] = useState(null);
     const [boxes, setBoxes] = useState(Array(7).fill([]));
 
+
+    
+//Start des Drafts und beziehen des ersten Boosters
     useEffect(() => {
         socket.on("start_draft", () => {
             loadBooster();
@@ -60,7 +63,7 @@ function Draft({ currentLobby, currentUser }) {
 
             // API-Aufruf zum Bestätigen des Picks
             await pickCard({
-                user_id: currentUser,
+                user_id: socket.id,
                 booster_id: currentBooster.booster_id,
                 card_id: selectedCardId,
             });

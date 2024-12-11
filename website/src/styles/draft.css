@@ -112,8 +112,8 @@ body {
     position: relative;
     width: 100%;
     min-height: 250px;
-    height: fit-content; /* Expand with card content */
-    padding-bottom: 30px; /* Space for last card */
+    height: fit-content; 
+    padding-bottom: 30px; 
 }
 
 /* Kartenabstand durch z-index und top */

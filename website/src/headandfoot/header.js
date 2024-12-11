@@ -4,34 +4,43 @@ import "../styles/header.css"
 import React, { useState } from 'react';
 import { socket } from '../utils/socket';
 
-function Header({onJoinLobby, onLeaveLobby, onCreateLobby}) {
+function Header({ onJoinLobby, onLeaveLobby, onCreateLobby }) {
     const [lobbyName, setLobbyName] = useState('');
     const [playerName, setPlayerName] = useState('');
 
+
+    const createLobbyData = () => ({
+        lobbyName,
+        playerName,
+        playerID: socket.id,
+        edition: document.getElementById('editions').value,
+        gameMode: document.getElementById('game-mode').value,
+        lobbySize: document.getElementById('lobbysize').value,
+        bots: document.getElementById('bots').value,
+        boosters: document.getElementById('boosters').value,
+        timer: document.getElementById('time').value
+    });
+
+
+
+
     const handleCreate = (e) => {
         e.preventDefault();
-        const lobbyData = {
-            lobbyName,
-            playerName,
-            edition: document.getElementById('editions').value,
-            gameMode: document.getElementById('game-mode').value,
-            lobbySize: document.getElementById('lobbysize').value,
-            bots: document.getElementById('bots').value,
-            boosters: document.getElementById('boosters').value,
-            timer: document.getElementById('time').value
-        };
-        
+
+        const lobbyData = createLobbyData();
         onCreateLobby(lobbyData);
-        onLeaveLobby({ lobbyName, playerName });
-        onJoinLobby({ lobbyName, playerName });
+        onLeaveLobby(lobbyData);
+        onJoinLobby(lobbyData);
 
     };
 
 
     const handleJoin = (e) => {
         e.preventDefault();
-        onLeaveLobby({ lobbyName, playerName });
-        onJoinLobby({ lobbyName, playerName });
+
+        const lobbyData = createLobbyData();
+        onLeaveLobby(lobbyData);
+        onJoinLobby(lobbyData);
     };
 
 

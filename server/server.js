@@ -34,8 +34,6 @@ const options = {
 };
 const io = require("socket.io")(httpServer, options);
 
-//Map um den SpielerNamen einer ID zuzuordnen, wird mit der Datenbankintegration obsolet
-const socketToPlayer = new Map();
 //Map aller aktiven Lobbys
 const activeLobbies = new Map(); 
 
@@ -61,13 +59,15 @@ const { DBCreateUser, DBWriteConnectFalse, DBWriteConnectTrue, DBCreateLobby, DB
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
+  
+
   DBCreateUser(socket.id);
 
 
   socket.on("create_lobby", (data) => {
-    const { lobbyName, playerName, edition, gameMode, lobbySize, bots, boosters, timer} = data;
+    const { lobbyName, playerName, playerID, edition, gameMode, lobbySize, bots, boosters, timer} = data;
     console.log("Timestamp lobby creation:", new Date().toISOString());
-    DBCreateLobby(lobbyName, playerName, lobbySize, edition, gameMode, bots, boosters, timer);
+    DBCreateLobby(lobbyName, playerID, lobbySize, edition, gameMode, bots, boosters, timer);
 
     if (activeLobbies.has(lobbyName)) {
       socket.emit("lobby_error", "Lobby already exists");
@@ -78,6 +78,7 @@ io.on("connection", (socket) => {
     const lobbyData = {
       name: lobbyName,
       host: playerName,
+      host_id: playerID,
       edition,
       gameMode,
       lobbySize,
@@ -88,7 +89,7 @@ io.on("connection", (socket) => {
     };
  
     //Die beiden Maps befüllen sich mit den Daten
-    socketToPlayer.set(socket.id, playerName);
+    
     activeLobbies.set(lobbyName, lobbyData);
 
     io.to(lobbyName).emit("lobby_created", lobbyData);
@@ -96,13 +97,15 @@ io.on("connection", (socket) => {
   });
 
   socket.on("join_lobby", (data) => {
-    const { lobbyName, playerName } = data;
+    console.log(data);
+    
+    const { lobbyName, playerName, playerID } = data;
 
     if (!activeLobbies.has(lobbyName)) {
       socket.emit("lobby_error", "This lobby doesn't exist");
       return;
     }
-    socketToPlayer.set(socket.id, playerName);
+  
 
     const lobby = activeLobbies.get(lobbyName);
     const maxLobbySize = lobby.lobbysize;
@@ -114,14 +117,15 @@ io.on("connection", (socket) => {
       return;
     }
 
-    lobby.players.push(playerName);
+    
+    lobby.players.push(playerID);
     socket.join(lobbyName);
     io.to(lobbyName).emit("chat_message", `${playerName} joined the lobby  ${lobbyName}`);
 
     //Checken ob die Lobby zusammen mit Bots(Noch nicht integriert) voll ist
     const totalPlayers = lobby.players.length + parseInt(lobby.bots);
     const targetSize = lobby.lobbySize;
-    console.log(totalPlayers, targetSize);
+    console.log("Anzahl Spieler: " +totalPlayers+ " Größe der Lobby: " + targetSize);
     
     //Countdown für den draft
     if (totalPlayers == targetSize) {
@@ -157,22 +161,26 @@ io.on("connection", (socket) => {
   //Leave und Disconnect sind derzeit noch identisch, können aber gegebenenfalls angepasst werden
 
   socket.on("leave_lobby", (data) => {
-    const disconnectedPlayer = socketToPlayer.get(socket.id);
+    const disconnectedPlayer = socket.id;
+    const playerName = data.playerName;
 
     for (const [lobbyName, lobby] of activeLobbies.entries()) {
       if (lobby.players.includes(disconnectedPlayer)) {
         lobby.players = lobby.players.filter(player => player !== disconnectedPlayer);
         activeLobbies.set(lobbyName, lobby);
-        io.to(lobbyName).emit("chat_message", `${disconnectedPlayer} left the lobby ${lobbyName}`);
+        io.to(lobbyName).emit("chat_message", `${playerName} left the lobby ${lobbyName}`);
       }
     }
-    socketToPlayer.delete(socket.id);
+    
   });
 
 
+//um den Spielernamen anzuzeigen, kann ich zukünftig die Datenbank abfragen
+
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
-    const disconnectedPlayer = socketToPlayer.get(socket.id);
+    const disconnectedPlayer = socket.id;
+    
 
     for (const [lobbyName, lobby] of activeLobbies.entries()) {
       if (lobby.players.includes(disconnectedPlayer)) {
@@ -182,7 +190,7 @@ io.on("connection", (socket) => {
       }
     }
     DBWriteConnectFalse(socket.id);
-    socketToPlayer.delete(socket.id);
+    
     
   });
 
@@ -197,6 +205,7 @@ io.on("connection", (socket) => {
 
 //Importierung der Methode der Booster Erstellung
 const { generateBooster } = require('./createBooster.js');
+const { get } = require('http');
 
 
 //Über die Anfrage wird ein Booster generiert
