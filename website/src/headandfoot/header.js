@@ -66,7 +66,7 @@ function Header({ onJoinLobby, onLeaveLobby, onCreateLobby }) {
                     <label for="editions">Edition:</label>
                     <select id="editions">
                         <option value="doaalter">Dawn of Ashes</option>
-                        <option value="ftca">Fractured Crown</option>
+                        <option value="ftc">Fractured Crown</option>
                         <option value="alc">Alchemical Revolution</option>
                         <option value="mrc">Mercurial Heart</option>
                         <option value="amb">Mortal Ambition</option>

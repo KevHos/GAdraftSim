@@ -39,7 +39,7 @@ function Draft({ currentLobby }) {
         // Karten nach 5 Sekunden umdrehen
         setTimeout(() => {
             setShowCardBacks(false);
-        }, 5000);
+        }, 3000);
     }
 
     useEffect(() => {

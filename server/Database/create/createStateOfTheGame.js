@@ -52,7 +52,7 @@ console.log("Table editions created");
 
 //Kann ich sicherlich noch in einen einzelnen Query umwandeln, läuft aber derzeit und muss nur einmalig aufgerufen werden
 con.query("INSERT INTO editions (edition_id) VALUES('doaalter')");
-con.query("INSERT INTO editions (edition_id) VALUES('ftca')");
+con.query("INSERT INTO editions (edition_id) VALUES('ftc')");
 con.query("INSERT INTO editions (edition_id) VALUES('alc')");
 con.query("INSERT INTO editions (edition_id) VALUES('mrc')");
 con.query("INSERT INTO editions (edition_id) VALUES('amb')");
