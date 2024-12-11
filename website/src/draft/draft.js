@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import "../styles/draft.css";
 import { fetchBooster, pickCard } from "./api";
 import { socket } from '../utils/socket';
+import cardBack from '../assets/cardback.jpg';
 
 
 /* Das Dokument hatte ich deutlich unschöner schon in Javascript geschrieben und war auch funktional, 
@@ -13,14 +14,13 @@ Cody hat mir hier viel geholfen, da ich in React noch nicht so vertraut bin.
 Besonders die dynamisch erstellen Boxen anhand eines Arrays sind cleverere Lösungen als meine.
  */
 
-function Draft({ currentLobby}) {
+function Draft({ currentLobby }) {
     const [currentBooster, setCurrentBooster] = useState(null);
     const [selectedCardId, setSelectedCardId] = useState(null);
     const [boxes, setBoxes] = useState(Array(7).fill([]));
+    const [showCardBacks, setShowCardBacks] = useState(true); // State for showing card backs
 
-
-    
-//Start des Drafts und beziehen des ersten Boosters
+    // Start des Drafts und beziehen des ersten Boosters
     useEffect(() => {
         socket.on("start_draft", () => {
             loadBooster();
@@ -34,10 +34,14 @@ function Draft({ currentLobby}) {
     async function loadBooster() {
         const booster = await fetchBooster(socket.id, currentLobby);
         setCurrentBooster(booster);
-        
+        setShowCardBacks(true); // Rücksseite der Karte beim laden des Boosters anzeigen
+
+        // Karten nach 5 Sekunden umdrehen
+        setTimeout(() => {
+            setShowCardBacks(false);
+        }, 5000);
     }
 
-    
     useEffect(() => {
         // Wenn die Lobby geändert wird, dann setze ich Booster, derzeitig ausgewählte Karte und den Inhalt der Boxen auf 0
         setCurrentBooster(null);
@@ -45,13 +49,10 @@ function Draft({ currentLobby}) {
         setBoxes(Array(7).fill([]));
     }, [currentLobby]);
 
-
     // Card selection handler
     const handleCardClick = (cardId) => {
-
         setSelectedCardId(cardId);
     };
-
 
     // Confirm pick handler
     const handleConfirmPick = async () => {
@@ -75,7 +76,6 @@ function Draft({ currentLobby}) {
             setCurrentBooster((prev) => ({
                 ...prev,
                 cards: prev.cards.filter((card) => card.card_id !== selectedCardId),
-
             }));
             setSelectedCardId(null);
         } catch (error) {
@@ -101,7 +101,6 @@ function Draft({ currentLobby}) {
         }
     };
 
-
     return (
         <div className="container_top">
             <button
@@ -116,23 +115,37 @@ function Draft({ currentLobby}) {
             <div className="large_box" id="large_box">
                 {currentBooster?.cards.map((card) => (
                     <div
-                        key={card.card_id}
-                        className={`card_div ${selectedCardId === card.card_id ? "selected" : ""
-                            }`}
-                        onClick={() => handleCardClick(card.card_id)}
-                    >
-                        <img
-                            id={card.card_id}
-                            className="card_pic"
-                            src={card.picture}
-                            alt={card.name}
-                        />
-                        <h3 hidden>{card.name}</h3>
-                        <p hidden>Memory: {card.memory}</p>
-                        <p hidden>Reserve: {card.reserve}</p>
-                        <p hidden>Element: {card.element}</p>
-                        <p hidden>Rarity: {card.rarity}</p>
-                    </div>
+    key={card.card_id}
+    className={`card_div ${selectedCardId === card.card_id ? "selected" : ""}`}
+    onClick={() => handleCardClick(card.card_id)}
+>
+    <div className="card_container">
+        <div className={`card_inner ${showCardBacks ? "flipped" : ""}`}>
+            <div className="card_face back">
+                <img
+                    id={card.card_id}
+                    className="card_pic"
+                    src={cardBack}
+                    alt="Card Back"
+                />
+            </div>
+            <div className="card_face front">
+                <img
+                    id={card.card_id}
+                    className="card_pic"
+                    src={card.picture}
+                    alt={card.name}
+                />
+            </div>
+        </div>
+    </div>
+    <h3 hidden>{card.name}</h3>
+    <p hidden>Memory: {card.memory}</p>
+    <p hidden>Reserve: {card.reserve}</p>
+    <p hidden>Element: {card.element}</p>
+    <p hidden>Rarity: {card.rarity}</p>
+</div>
+
                 ))}
             </div>
 
@@ -163,12 +176,9 @@ function Draft({ currentLobby}) {
                                 />
                             ))}
                         </div>
-
                     </div>
                 ))}
             </div>
-
-
         </div>
     );
 }
