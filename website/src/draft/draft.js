@@ -20,27 +20,33 @@ function Draft({ currentLobby }) {
     const [boxes, setBoxes] = useState(Array(7).fill([]));
     const [showCardBacks, setShowCardBacks] = useState(true); // State for showing card backs
 
-    // Start des Drafts und beziehen des ersten Boosters
+
+
+
     useEffect(() => {
         socket.on("start_draft", () => {
-            loadBooster();
+            
+            socket.emit("generateBooster", {currentUser : socket.id});
+        });
+
+        socket.on("booster_generated", (booster) => {
+            setCurrentBooster(booster);
+            console.log("Booster im Client: ", booster);
+            
+            setShowCardBacks(true); // Rücksseite der Karte beim Laden des Boosters anzeigen
+            // Karten nach 5 Sekunden umdrehen
+            setTimeout(() => {
+                setShowCardBacks(false);
+            }, 3000);
         });
 
         return () => {
             socket.off("start_draft");
+            socket.off("generateBooster");
+            socket.off("booster_generated");
         };
-    }, [socket.id, currentLobby]);
+    }, []);
 
-    async function loadBooster() {
-        const booster = await fetchBooster(socket.id, currentLobby);
-        setCurrentBooster(booster);
-        setShowCardBacks(true); // Rücksseite der Karte beim laden des Boosters anzeigen
-
-        // Karten nach 5 Sekunden umdrehen
-        setTimeout(() => {
-            setShowCardBacks(false);
-        }, 3000);
-    }
 
     useEffect(() => {
         // Wenn die Lobby geändert wird, dann setze ich Booster, derzeitig ausgewählte Karte und den Inhalt der Boxen auf 0
@@ -115,36 +121,36 @@ function Draft({ currentLobby }) {
             <div className="large_box" id="large_box">
                 {currentBooster?.cards.map((card) => (
                     <div
-    key={card.card_id}
-    className={`card_div ${selectedCardId === card.card_id ? "selected" : ""}`}
-    onClick={() => handleCardClick(card.card_id)}
->
-    <div className="card_container">
-        <div className={`card_inner ${showCardBacks ? "flipped" : ""}`}>
-            <div className="card_face back">
-                <img
-                    id={card.card_id}
-                    className="card_pic"
-                    src={cardBack}
-                    alt="Card Back"
-                />
-            </div>
-            <div className="card_face front">
-                <img
-                    id={card.card_id}
-                    className="card_pic"
-                    src={card.picture}
-                    alt={card.name}
-                />
-            </div>
-        </div>
-    </div>
-    <h3 hidden>{card.name}</h3>
-    <p hidden>Memory: {card.memory}</p>
-    <p hidden>Reserve: {card.reserve}</p>
-    <p hidden>Element: {card.element}</p>
-    <p hidden>Rarity: {card.rarity}</p>
-</div>
+                        key={card.card_id}
+                        className={`card_div ${selectedCardId === card.card_id ? "selected" : ""}`}
+                        onClick={() => handleCardClick(card.card_id)}
+                    >
+                        <div className="card_container">
+                            <div className={`card_inner ${showCardBacks ? "flipped" : ""}`}>
+                                <div className="card_face back">
+                                    <img
+                                        id={card.card_id}
+                                        className="card_pic"
+                                        src={cardBack}
+                                        alt="Card Back"
+                                    />
+                                </div>
+                                <div className="card_face front">
+                                    <img
+                                        id={card.card_id}
+                                        className="card_pic"
+                                        src={card.picture}
+                                        alt={card.name}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <h3 hidden>{card.name}</h3>
+                        <p hidden>Memory: {card.memory}</p>
+                        <p hidden>Reserve: {card.reserve}</p>
+                        <p hidden>Element: {card.element}</p>
+                        <p hidden>Rarity: {card.rarity}</p>
+                    </div>
 
                 ))}
             </div>

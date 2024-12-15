@@ -38,7 +38,7 @@ async function readOutDatabase(rarity, amount) {
         password: "",
         database: "cardDatabase",
     });
-
+try{
     return new Promise((resolve, reject) => {
         const sql = `SELECT * FROM ?? WHERE rarity = ? ORDER BY RAND() LIMIT ?`;
         con.query(sql, [edition, rarity, amount], (err, result) => {
@@ -49,14 +49,13 @@ async function readOutDatabase(rarity, amount) {
                 
             }
         });
-
-        con.end((error) => {
-            if (error) {
-                console.error("Error closing MySQL connection:", error);
-            }
-            
-        });
     });
+        con.end();
+        return result;}
+        catch (error) {
+            con.end();
+            throw error;
+        }
 }
 
 function createCard(data) {
@@ -88,7 +87,7 @@ async function fetchCardsByRarity(rarity, count) {
 
 async function generateBooster(owner, editionbrowser, gamemode) {
 
-    console.log("Owner: " + owner+ " Edition: " +editionbrowser+ " Gamemode: "+ gamemode);
+    console.log("BoosterPack generated: Owner: " + owner+ " Edition: " +editionbrowser+ " Gamemode: "+ gamemode);
     
     if (gamemode == "draft") {
        common = 10;
@@ -100,28 +99,32 @@ async function generateBooster(owner, editionbrowser, gamemode) {
         uncommon = 3;
         rare = 4;
         
-    }else if (gamemode == "sealed") 
+    }else if (gamemode == "draft+m") 
     {
-        common = 60;
-        uncommon = 24;
-        rare = 6;
+        common = 10;
+        uncommon = 10;
+        rare = 10;
     }
     
-    console.log(common, uncommon, rare);
-    
-    booster = []; 
+    let booster = []; 
     edition = editionbrowser;
     state = "active";
 
+    //Track amount of cards to be added
+   // console.log(`Target counts - Common: ${common}, Uncommon: ${uncommon}, Rare: ${rare}`);
+
     //Add commons
     const commons = await fetchCardsByRarity(1, common);
+    //console.log(`Commons fetched: ${commons.length}`);
     booster.push(...commons);
 
     //Add uncommons
     const uncommons = await fetchCardsByRarity(2, uncommon);
+    //console.log(`Uncommons fetched: ${uncommons.length}`);
     booster.push(...uncommons);
 
     //Add rare+. Derzeit hardcoded, verschiedene Editionen haben aber anscheinend verschiedene Chancen
+    let rareCount = 0;
     for(x = 0; x < rare; x++) {
         const random = Math.random();
         let rareRarity;
@@ -133,14 +136,15 @@ async function generateBooster(owner, editionbrowser, gamemode) {
             rareRarity = 5;
         }
         const rares = await fetchCardsByRarity(rareRarity, 1);
-
-        if(rares.length == 0) {
-            x = x - 1;
+        if(rares.length > 0) {
+            booster.push(...rares);
+            rareCount++;
+        } else {
+            x--;
         }
-        booster.push(...rares);
     }
-    
-   
+    //console.log(`Rares fetched: ${rareCount}`);
+    //console.log(`Total cards in booster: ${booster.length}`);
 
 
     return await createBooster(owner, state, edition, booster);

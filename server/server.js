@@ -54,7 +54,8 @@ setInterval(() => {
 }, 30000);
 
 
-const { DBCreateUser, DBWriteConnectFalse, DBWriteConnectTrue, DBCreateLobby, DBDeleteLobby } = require('./Database/write/writeDatabase.js');
+const { DBCreateUser, DBWriteConnectFalse, DBWriteConnectTrue, DBCreateLobby, DBDeleteLobby, DBWriteDraftPosition,  DBJoinUser, DBLeaveUser } = require('./Database/update/writeDatabase.js');
+const {DBReadUser, DBReadLobby, } = require('./Database/update/readDatabase.js')
 
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
@@ -66,13 +67,16 @@ io.on("connection", (socket) => {
 
   socket.on("create_lobby", (data) => {
     const { lobbyName, playerName, playerID, edition, gameMode, lobbySize, bots, boosters, timer} = data;
+
+    console.log("Name der Lobby: " + lobbyName);
     console.log("Timestamp lobby creation:", new Date().toISOString());
-    DBCreateLobby(lobbyName, playerID, lobbySize, edition, gameMode, bots, boosters, timer);
 
     if (activeLobbies.has(lobbyName)) {
       socket.emit("lobby_error", "Lobby already exists");
       return;
     }
+
+    DBCreateLobby(lobbyName, playerID, lobbySize, edition, gameMode, bots, boosters, timer);
     //Eine Lobby hat diverse Daten, die in der Lobby gespeichert werden um den Gamestate zu überprüfen
 
     const lobbyData = {
@@ -97,7 +101,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("join_lobby", (data) => {
-    console.log(data);
+    
     
     const { lobbyName, playerName, playerID } = data;
 
@@ -105,17 +109,18 @@ io.on("connection", (socket) => {
       socket.emit("lobby_error", "This lobby doesn't exist");
       return;
     }
-  
 
     const lobby = activeLobbies.get(lobbyName);
-    const maxLobbySize = lobby.lobbysize;
+    const maxLobbySize = lobby.lobbySize;
 
-
+    
     //Checken ob die Lobby voll ist. Hier gibt es noch bugs. Die Lobby wird zwar als voll angezeigt, aber der Spieler kann trotzdem noch beitreten.
     if (lobby.players.length >= maxLobbySize) {
       socket.emit("lobby_error", "Lobby is full");
       return;
     }
+  
+    DBJoinUser(playerID, lobbyName, playerName);
 
     
     lobby.players.push(playerID);
@@ -125,11 +130,20 @@ io.on("connection", (socket) => {
     //Checken ob die Lobby zusammen mit Bots(Noch nicht integriert) voll ist
     const totalPlayers = lobby.players.length + parseInt(lobby.bots);
     const targetSize = lobby.lobbySize;
-    console.log("Anzahl Spieler: " +totalPlayers+ " Größe der Lobby: " + targetSize);
+    
     
     //Countdown für den draft
     if (totalPlayers == targetSize) {
-      console.log("Lobby is full. Starting draft in....");
+
+      for (let i = 0; i < lobby.players.length; i++) {
+        DBWriteDraftPosition(i ,lobby.players[i]);
+        /* console.log(i);
+        console.log(lobby.players[i]); */
+        
+        
+      }
+
+      console.log("Lobby " +lobby.name+ " is full. Starting draft in....");
       let countdown = 5;
   
       const timer = setInterval(() => {
@@ -163,6 +177,7 @@ io.on("connection", (socket) => {
   socket.on("leave_lobby", (data) => {
     const disconnectedPlayer = socket.id;
     const playerName = data.playerName;
+    DBLeaveUser(socket.id);
 
     for (const [lobbyName, lobby] of activeLobbies.entries()) {
       if (lobby.players.includes(disconnectedPlayer)) {
@@ -180,6 +195,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
     const disconnectedPlayer = socket.id;
+    DBLeaveUser(socket.id);
     
 
     for (const [lobbyName, lobby] of activeLobbies.entries()) {
@@ -194,6 +210,41 @@ io.on("connection", (socket) => {
     
   });
 
+  
+//Websocket hört auf die Anfrage "generateBooster" und bekommt mit der Anfrage die ID des Users
+  socket.on("generateBooster", async (data) => {
+try{
+    const playerId = data.currentUser;
+  console.log("Der Spieler mit der ID " + playerId + " hat den Befehl generateBooster ausgeführt");
+    
+//User aus der DB abfragen
+    const resultUser = (await DBReadUser(playerId))[0];
+    //console.log("User Object: ", resultUser);
+
+
+//Lobby aus der DB abfragen
+const resultLobby = (await DBReadLobby(resultUser.lobby_id))[0];
+   //console.log("Lobby Object: " , resultLobby);
+    
+//Methode zum Booster generieren
+    const booster = await generateBooster(resultUser.player_id, resultLobby.edition_id, resultLobby.gamemode);
+
+//Booster in der DB speichern
+    //DBWriteBooster(booster.booster_id, booster.cards)
+
+///Booster an den Client senden
+
+console.log("Generated booster for player " + playerId , ":" , booster.cards.length, "cards");
+
+    io.to(playerId).emit("booster_generated", booster);
+   
+    
+
+} catch (error) {
+  console.error("Error generating booster:", error);
+  socket.emit("booster_generation_error", "Failed to generate booster");
+}
+  });
 
 });
 
@@ -202,10 +253,8 @@ io.on("connection", (socket) => {
 
 
 
-
-//Importierung der Methode der Booster Erstellung
 const { generateBooster } = require('./createBooster.js');
-const { get } = require('http');
+
 
 
 //Über die Anfrage wird ein Booster generiert
@@ -214,6 +263,8 @@ draftRouter.get('/booster', async (req, res) => {
   const lobbyName = req.query.currentLobby;
   const lobby = activeLobbies.get(lobbyName);
  
+ 
+  
   
   
   const booster = await generateBooster(
@@ -222,8 +273,7 @@ draftRouter.get('/booster', async (req, res) => {
     lobby.gameMode,
   );
   res.json({ booster: booster });
-  console.log("Print Inhalt des Boosters: ");
-  console.log(JSON.stringify(booster));
+  //console.log(JSON.stringify(booster));
 });
 
 
@@ -244,7 +294,7 @@ draftRouter.post('/pick', (req, res) => {
 
 //Beispiele aus einem Tutorial für das zukünftige Routing
 
-
+const { get } = require('http');
 
 app.get("/", (req, res) => {
 

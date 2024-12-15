@@ -77,7 +77,7 @@ function Header({ onJoinLobby, onLeaveLobby, onCreateLobby }) {
                     <select id="game-mode">
                         <option value="draft">Draft</option>
                         <option value="draft+">Draft(+Rares)</option>
-                        <option value="sealed">Sealed</option>
+                        <option value="draft+m">Draft(MoreCards)</option>
                     </select>
                 </div>
                 <div class="field">
@@ -117,8 +117,14 @@ function Header({ onJoinLobby, onLeaveLobby, onCreateLobby }) {
                     </select>
                 </div>
                 <div class="field">
-                    <label for="time">Timer:</label>
-                    <input type="text" id="time" placeholder="Time in Seconds" />
+                    <label for="time">Timer Seconds</label>
+                    <select id="time">
+                        <option value="60">60</option>
+                        <option value="90">90</option>
+                        <option value="120">120</option>
+                        <option value="150">150</option>
+                        <option value="260">260</option>
+                    </select>
                 </div>
                 <button className="lobby_button" onClick={handleCreate}>Create Lobby</button>
                 <button className="lobby_button" onClick={handleJoin}>Join Lobby</button>

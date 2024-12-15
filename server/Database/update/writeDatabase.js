@@ -7,7 +7,10 @@ module.exports = {
     DBWriteConnectFalse,
     DBWriteConnectTrue,
     DBCreateLobby,
-    DBDeleteLobby
+    DBDeleteLobby,
+    DBWriteDraftPosition,
+    DBJoinUser,
+    DBLeaveUser,
 }
 
 var con = mysql.createConnection({
@@ -23,6 +26,26 @@ async function DBCreateUser(userId)
 
     con.query(
         "INSERT INTO players (player_id, connected, is_Bot) VALUES ('" + userId + "', TRUE, FALSE)",
+        function (err, result) {
+          if (err) throw err;
+        }
+      );
+    }
+
+  async function DBJoinUser(userId, lobbyId, playerName)
+  {
+    con.query(
+        "UPDATE players SET lobby_id = '" + lobbyId + "', name = '" + playerName + "' WHERE player_id = '" + userId + "'",
+        function (err, result) {
+          if (err) throw err;
+        }
+      );
+    }
+
+    async function DBLeaveUser(userId)
+    {
+      con.query(
+        "UPDATE players SET lobby_id = NULL WHERE player_id = '" + userId + "'",
         function (err, result) {
           if (err) throw err;
         }
@@ -47,6 +70,16 @@ async function DBWriteConnectFalse(userId)
             })
         }
 
+    async function DBWriteDraftPosition(position, userId)
+    {
+      con.query(
+        "UPDATE players SET draft_position = '"+position+"' WHERE player_id = '" + userId + "'",
+        function (err, result) {
+          if (err) throw err;
+        })
+    }
+    
+
     //Table Lobbys
     
     async function DBCreateLobby(lobbyName, playerName, lobbySize, edition, gameMode, bots, boosters, timer) 
@@ -69,4 +102,10 @@ async function DBWriteConnectFalse(userId)
             })
     }
 
+  //Table Booster
+
+  
+
+  //Table Cards
+    
 

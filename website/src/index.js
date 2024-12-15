@@ -1,7 +1,7 @@
 //Zusammenbau der Website über die einzelnen Komponenten
 
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { socket } from './utils/socket';
 
@@ -18,11 +18,18 @@ function App() {
   const [lobbyName, setLobbyName] = useState('');
   const [playerName, setPlayerName] = useState('');
   
-  
+  //Wenn der Server Lobby Errors sendet, dann wird diese ausgegeben und die Lobby wird zurückgesetzt.
+  useEffect(() => {
+    socket.on("lobby_error", (message) => {
+      alert(message);
+      setLobbyName('');
+    });
+    return () => socket.off("lobby_error");
+  }, []);
   
 
   const handleCreateLobby = (lobbyData) => {
-    
+
     socket.emit('create_lobby', lobbyData);
     setLobbyName(lobbyData.lobbyName);
     setPlayerName(lobbyData.playerName);
