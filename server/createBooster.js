@@ -96,7 +96,7 @@ async function generateBooster(owner, editionbrowser, gamemode) {
     } else if (gamemode == "draft+") 
     {
         common = 7;
-        uncommon = 3;
+        uncommon = 4;
         rare = 4;
         
     }else if (gamemode == "draft+m") 
@@ -110,8 +110,8 @@ async function generateBooster(owner, editionbrowser, gamemode) {
     edition = editionbrowser;
     state = "active";
 
-    //Track amount of cards to be added
-   // console.log(`Target counts - Common: ${common}, Uncommon: ${uncommon}, Rare: ${rare}`);
+   
+   //console.log(`Target counts - Common: ${common}, Uncommon: ${uncommon}, Rare: ${rare}`);
 
     //Add commons
     const commons = await fetchCardsByRarity(1, common);
@@ -122,29 +122,57 @@ async function generateBooster(owner, editionbrowser, gamemode) {
     const uncommons = await fetchCardsByRarity(2, uncommon);
     //console.log(`Uncommons fetched: ${uncommons.length}`);
     booster.push(...uncommons);
-
-    //Add rare+. Derzeit hardcoded, verschiedene Editionen haben aber anscheinend verschiedene Chancen
+    
+    //Add rares
+    //Mit der Logik hatte ich diverse Probleme, da einige Editionen nicht alle raritys haben und die Datenbank daher leere Ergebnisse ausgeteilt hat.
     let rareCount = 0;
-    for(x = 0; x < rare; x++) {
-        const random = Math.random();
-        let rareRarity;
-        if (random < 0.5) {
-            rareRarity = 3;
-        } else if (random < 0.8) {
-            rareRarity = 4;
-        } else {
-            rareRarity = 5;
+    const maxAttempts = 10; // Maximale Versuche pro Karte, um Endlos-Schleifen zu vermeiden
+    const rarities = [3, 4, 5]; // Mögliche Rarities für rare-Karten
+    
+    for (let i = 0; i < rare; i++) {
+        let attempts = 0;
+        let cardAdded = false;
+    
+        while (!cardAdded && attempts < maxAttempts) {
+            attempts++;
+    
+            const random = Math.random();
+            let rareRarity;
+            if (random < 0.5) {
+                rareRarity = 3;
+            } else if (random < 0.8) {
+                rareRarity = 4;
+            } else {
+                rareRarity = 5;
+            }
+    
+            const rares = await fetchCardsByRarity(rareRarity, 1);
+            if (rares.length > 0) {
+                booster.push(...rares);
+                rareCount++;
+                cardAdded = true;
+            }
         }
-        const rares = await fetchCardsByRarity(rareRarity, 1);
-        if(rares.length > 0) {
-            booster.push(...rares);
-            rareCount++;
-        } else {
-            x--;
+    
+        // Fallback: Wenn nach maxAttempts keine Karte gefunden wurde, prüfe alternative Rarities
+        if (!cardAdded) {
+            for (const fallbackRarity of rarities) {
+                const fallbackRares = await fetchCardsByRarity(fallbackRarity, 1);
+                if (fallbackRares.length > 0) {
+                    booster.push(...fallbackRares);
+                    rareCount++;
+                    break; 
+                }
+            }
         }
     }
-    //console.log(`Rares fetched: ${rareCount}`);
-    //console.log(`Total cards in booster: ${booster.length}`);
+
+    
+    
+   // console.log(`Rares fetched: ${rareCount}`);  
+
+    // Das Booster sortieren, damit die seltensten Karten am Anfang des Boosters sind
+    booster.sort((b,a) => a.rarity - b.rarity);
 
 
     return await createBooster(owner, state, edition, booster);

@@ -106,6 +106,8 @@ async function DBWriteConnectFalse(userId)
 
   
 
+  
+
   //Table Cards
     
 
