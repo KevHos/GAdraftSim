@@ -7,17 +7,17 @@ Ein Draft in einem Sammelkartenspiel ist ein Spielmodus, bei dem Spieler aus ein
 
 ![Draft](https://github.com/KevHos/GAdraftSim/blob/main/Dokumentation/Screenshots/Draft2.png)
 
-Dieses Projekt ist ein persönliches Hobby, das ich in meiner Freizeit neben der Schule kontinuierlich weiterentwickle. Zu Beginn hatte ich keinerlei Erfahrung mit Technologien wie React, Socket.IO, MySQL sowie Frontend- und Backend-Entwicklung. Auch wenn ich immer noch viel zu lernen habe, stellt dieses Projekt für mich eine spannende und motivierende Herausforderung dar, die ich mit Leidenschaft verfolge.
+Dieses Projekt ist ein persönliches Hobby, das ich in meiner Freizeit neben der Schule kontinuierlich weiterentwickle. Zu Beginn hatte ich keinerlei Erfahrung mit den verwendeten Technologien: React, Socket.IO, MySQL sowie Frontend- und Backend-Entwicklung. Das Projekt befindet sich noch am Anfang, stellt für mich allerdings eine spannende und motivierende Herausforderung dar, die ich mit Leidenschaft verfolge.
 
 Bereits umgesetzt:
 
--Fetch der API des Herstellers, um alle Karten des Spiels in eine Datenbank zu importieren.<br>
+-Fetch der API des Herstellers, um alle Karten des Spiels in meine MYSQL Datenbank zu importieren.<br>
 -Zufällige Karten anhand von Edition und Seltenheit aus der Datenbank abrufbar gemacht.<br>
 -Booster und Karten mit eindeutigen IDs versehen.<br>
 -Gestaltung einer Website für den eigentlichen Draft-Prozess.<br>
 -Logik für das Draften von Karten und Sortierung der Karten im persönlichen Kartenpool.<br>
 -Aufteilung des Projekts in Frontend und Backend.<br>
--Server eingerichtet und funktionsfähig gemacht.<br>
+-Den Server über Javascript/Express aufgesetzt und CORS Problematik beseitigt.<br>
 -Socket.IO für Lobbys und den Chat integriert.<br>
 -Planung der Datenbankstruktur für den "StateoftheGame".<br>
 
