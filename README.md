@@ -57,6 +57,8 @@ Dieses Projekt ist ein persönliches Hobby, das ich in meiner Freizeit neben der
    - Zudem erlaubte es mir ohne großen Aufwand ein Chat-System in meine Website zu integrieren, was alleine durch regelmäßige API Abfragen wohlmöglich viele Ressourcen gekostet hätte<br>
    <br>
 
+![Lobby](https://github.com/KevHos/GAdraftSim/blob/main/Dokumentation/Screenshots/Lobby.png)
+
 <h2>Struktur des Projektfolders</h2>
 
 Das Projekt ist grundlegend in 2 Kategorien gegliedert, die sich in Website(Client) und Server aufteilen.<br>
@@ -89,4 +91,6 @@ Im Client befinden sich derzeit alle relevanten Dokument im Ordner "src".
 
 <br>
 
-![Lobby](https://github.com/KevHos/GAdraftSim/blob/main/Dokumentation/Screenshots/Lobby.png)
+https://github.com/user-attachments/assets/b63dd14a-6cc3-4994-9288-edc7e08f76a2
+
+
