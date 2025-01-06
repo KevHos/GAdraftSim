@@ -42,7 +42,7 @@ Dieses Projekt ist ein persönliches Hobby, das ich in meiner Freizeit neben der
 
 1. React
    - Die Frontendentwicklung gestaltete sich schnell als umständlich und unübersichtlich, weswegen ich ein Framework brauchte um mir die Arbeiten daran zu erleichtern.<br>
-   - React gibt mir die Möglichkeit, in HTML in Javascript Files zu verwenden und so auch HTML auf verschiedene Dokumente auszugliedern und im Nachhinein wieder hinzuzufügen um die Übersichtlichkeit zu bewahren.<br>
+   - React gibt mir die Möglichkeit, HTML in Javascript Files zu verwenden und so auch HTML auf verschiedene Dokumente auszugliedern und im Nachhinein wieder hinzuzufügen um die Übersichtlichkeit zu bewahren.<br>
    - Die Hooks und Effects von React sind zudem sehr nützlich, jedoch stehe ich da noch am Anfang des Verständnisses.<br>
 
 2. Express
