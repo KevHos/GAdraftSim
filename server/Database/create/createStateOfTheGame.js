@@ -116,7 +116,7 @@ con.query(sql, function (err, result) {
 
 var sql = `
     CREATE TABLE decks (
-        deck_id VARCHAR(255) NOT NULL, 
+        deck_id VARCHAR(255) NULL, 
         player_id VARCHAR(255), 
         PRIMARY KEY (deck_id), 
         FOREIGN KEY (player_id) REFERENCES players(player_id)

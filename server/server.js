@@ -54,8 +54,19 @@ setInterval(() => {
 }, 30000);
 
 //Methoden für das schreiben und auslesen der Datenbank
-const { DBCreateUser, DBWriteConnectFalse, DBWriteConnectTrue, DBCreateLobby, DBDeleteLobby, DBWriteDraftPosition, DBJoinUser, DBLeaveUser } = require('./Database/update/writeDatabase.js');
-const { DBReadUser, DBReadLobby, } = require('./Database/update/readDatabase.js')
+const { DBCreateUser,
+  DBWriteConnectFalse,
+  DBWriteConnectTrue,
+  DBCreateLobby,
+  DBDeleteLobby,
+  DBWriteDraftPosition,
+  DBJoinUser,
+  DBLeaveUser,
+  DBCreateBooster,
+  DBDeleteBooster,
+  DBUpdateCard,
+  DBUpdateBoosterOwner, } = require('./Database/update/writeDatabase.js');
+const { DBReadUser, DBReadLobby, DBReadDeck, } = require('./Database/update/readDatabase.js')
 
 io.on("connection", (socket) => {
 
@@ -138,10 +149,8 @@ io.on("connection", (socket) => {
 
       for (let i = 0; i < lobby.players.length; i++) {
         DBWriteDraftPosition(i, lobby.players[i]);
-        /* console.log(i);
-        console.log(lobby.players[i]); */
-
-
+        console.log(i);
+        console.log(lobby.players[i]); 
       }
 
       console.log("Lobby " + lobby.name + " is full. Starting draft in....");
@@ -214,7 +223,7 @@ io.on("connection", (socket) => {
   });
 
 
-
+const {generateBooster} = require('./createBooster.js');
 
   //Websocket hört auf die Anfrage "generateBooster" und bekommt mit der Anfrage die ID des Users
   socket.on("generateBooster", async (data) => {
@@ -235,8 +244,8 @@ io.on("connection", (socket) => {
       const booster = await generateBooster(resultUser.player_id, resultLobby.edition_id, resultLobby.gamemode);
 
       //Booster in der DB speichern
-      //DBWriteBooster(booster.booster_id, booster.cards)
-
+      await DBCreateBooster(booster)
+      
 
       console.log("Generated booster for player " + playerId, ":", booster.cards.length, "cards");
 
@@ -251,6 +260,22 @@ io.on("connection", (socket) => {
       socket.emit("booster_generation_error", "Failed to generate booster");
     }
   });
+
+socket.on("draft_pick", async (data) => {
+  const { user_id, booster_id, card_id } = data;
+
+  //await DBUpdateCard(user_id, card_id);
+
+
+//Nächsten Owner in der Reihenfolge ermitteln
+  //await DBUpdateBoosterOwner(booster_id, user_id);
+
+
+  
+
+});
+
+
 
 });
 
