@@ -68,8 +68,8 @@ function Draft({ currentLobby }) {
             // Karte abrufen
             const pickedCard = currentBooster.cards.find(card => card.card_id === selectedCardId);
 
-            // API-Aufruf zum Bestätigen des Picks
-            await pickCard({
+            
+            socket.emit("draft_pick", {
                 user_id: socket.id,
                 booster_id: currentBooster.booster_id,
                 card_id: selectedCardId,
@@ -78,12 +78,16 @@ function Draft({ currentLobby }) {
             // Karte in die passende Box hinzufügen
             addCardToBox(pickedCard);
 
-            // UI aktualisieren: Entferne die Karte aus dem Booster
-            setCurrentBooster((prev) => ({
+            // Entferne nur die aktuelle Kartee aus dem aktuellen Booster
+            /* setCurrentBooster((prev) => ({
                 ...prev,
                 cards: prev.cards.filter((card) => card.card_id !== selectedCardId),
-            }));
+            })); */
+
+            // Das gesamte Booster löschen
             setSelectedCardId(null);
+            setCurrentBooster(null);
+            
         } catch (error) {
             console.error("Error confirming pick:", error);
         }

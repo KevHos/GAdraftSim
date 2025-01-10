@@ -88,7 +88,8 @@ var sql = `
         name VARCHAR(255), 
         draft_position INT, 
         connected BOOLEAN DEFAULT FALSE, 
-        is_bot BOOLEAN DEFAULT FALSE, 
+        is_bot BOOLEAN DEFAULT FALSE,
+        draft_state ENUM('picked', 'not_picked') NOT NULL,
         PRIMARY KEY (player_id), 
         FOREIGN KEY (lobby_id) REFERENCES lobbys(lobby_id)
     )
@@ -100,10 +101,11 @@ con.query(sql, function (err, result) {
 
 var sql = `
     CREATE TABLE boosters (
-        booster_id VARCHAR(255) NOT NULL, 
+        booster_id VARCHAR(255) NULL, 
         player_id VARCHAR(255), 
         state ENUM('active', 'empty') NOT NULL, 
         edition_id VARCHAR(255), 
+        position INT,
         PRIMARY KEY (booster_id), 
         FOREIGN KEY (player_id) REFERENCES players(player_id), 
         FOREIGN KEY (edition_id) REFERENCES editions(edition_id)

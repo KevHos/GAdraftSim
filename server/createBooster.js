@@ -87,7 +87,7 @@ async function fetchCardsByRarity(rarity, count) {
 
 async function generateBooster(owner, editionbrowser, gamemode) {
 
-    console.log("BoosterPack generated: Owner: " + owner+ " Edition: " +editionbrowser+ " Gamemode: "+ gamemode);
+   // console.log("BoosterPack generated: Owner: " + owner+ " Edition: " +editionbrowser+ " Gamemode: "+ gamemode);
     
     if (gamemode == "draft") {
        common = 10;

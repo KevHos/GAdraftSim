@@ -65,7 +65,9 @@ const { DBCreateUser,
   DBCreateBooster,
   DBDeleteBooster,
   DBUpdateCard,
-  DBUpdateBoosterOwner, } = require('./Database/update/writeDatabase.js');
+  DBUpdateBoosterOwner,
+  DBUpdateUserState
+ } = require('./Database/update/writeDatabase.js');
 const { DBReadUser, DBReadLobby, DBReadDeck, } = require('./Database/update/readDatabase.js')
 
 io.on("connection", (socket) => {
@@ -233,11 +235,13 @@ const {generateBooster} = require('./createBooster.js');
 
       //User aus der DB abfragen
       const resultUser = (await DBReadUser(playerId))[0];
+      
       //console.log("User Object: ", resultUser);
 
 
       //Lobby aus der DB abfragen
       const resultLobby = (await DBReadLobby(resultUser.lobby_id))[0];
+
       //console.log("Lobby Object: " , resultLobby);
 
       //Methode zum Booster generieren
@@ -264,14 +268,13 @@ const {generateBooster} = require('./createBooster.js');
 socket.on("draft_pick", async (data) => {
   const { user_id, booster_id, card_id } = data;
 
-  //await DBUpdateCard(user_id, card_id);
+  //Der Karte einen neuen User geben
+  await DBUpdateCard(user_id, card_id);
+  //User auf "picked" setzen
+  await DBUpdateUserState(user_id);
 
+//In draft_pick kommt wahrscheinlich die gesamte Logik zum Booster passen und tracken.
 
-//Nächsten Owner in der Reihenfolge ermitteln
-  //await DBUpdateBoosterOwner(booster_id, user_id);
-
-
-  
 
 });
 

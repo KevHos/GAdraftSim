@@ -17,6 +17,7 @@ module.exports = {
     DBDeleteBooster,
     DBUpdateCard,
     DBUpdateBoosterOwner,
+    DBUpdateUserState
     
 
 }
@@ -33,7 +34,7 @@ async function DBCreateUser(userId)
 {
 
     con.query(
-        "INSERT INTO players (player_id, connected, is_Bot) VALUES ('" + userId + "', TRUE, FALSE)",
+        "INSERT INTO players (player_id, connected, is_Bot, draft_state) VALUES ('" + userId + "', TRUE, FALSE, 'not_picked')",	
         function (err, result) {
           if (err) throw err;
         }
@@ -96,6 +97,19 @@ async function DBWriteConnectFalse(userId)
         })
     }
     
+    //Unbedingt noch mal anfassen, da der Name irreführend ist.
+    //Ich könnte sie "Switch-State" nennen und je nach derzeitigem State auf den anderen wechseln.
+    async function DBUpdateUserState(user_id)
+    {
+      con.query(
+        "UPDATE players SET draft_state = 'picked' WHERE player_id = '" + user_id + "'",
+        function (err, result) {
+          if (err) throw err;
+        })
+    }
+
+
+    
     
 
     //Table Lobbys
@@ -139,7 +153,7 @@ async function DBWriteConnectFalse(userId)
 
 
     con.query(
-      "INSERT INTO boosters (booster_id, player_id, state, edition_id) VALUES ('" + boosterId + "', '" + playerId + "', '" + state + "', '" + editionId + "')",
+      "INSERT INTO boosters (booster_id, player_id, state, edition_id, position) VALUES ('" + boosterId + "', '" + playerId + "', '" + state + "', '" + editionId + "', 1)",
       function (err, result) {
         if (err) throw err;
       }
@@ -193,27 +207,30 @@ async function DBWriteConnectFalse(userId)
       
     }
 //NICHT FUNKTIONAL
-    async function DBUpdateBoosterOwner(boosterId, playerId, lobbyId)
+    async function DBUpdateBoosterOwner(boosterId, playerId)
     {
-      //Irgendwie muss ich noch an die draft Position des Besitzers kommen
+      
       const owner = await DBReadUser(playerId);
-      const ownerDraftPositiion = owner[0].draft_position;
-      const lobby= await DBReadLobby(lobbyId);
-      const lobbySize = lobby[0].max_players;
-
-
-      if(ownerDraftPositiion == lobbySize)
-      {
-        ownerDraftPositiion = 0;
-      }
-      else {
-        ownerDraftPositiion++;
-      }
-
+      let ownerDraftPosition = owner[0].draft_position;
+      const lobbyId = owner[0].lobby_id;
+      console.log("Owner Draft Position: " + ownerDraftPosition);
   
       
+      const lobby= await DBReadLobby(lobbyId);
       
+     
+      const lobbySize = lobby[0].max_players;
 
+      
+      if(ownerDraftPosition == lobbySize)
+      {
+        ownerDraftPosition = 0;
+      }
+      else {
+        ownerDraftPosition++;
+      }
+
+      
       con.query(
         "UPDATE boosters SET player_id = '" + newOwnerId + "' WHERE booster_id = '" + boosterId + "'",
         function (err, result) {
@@ -233,8 +250,10 @@ async function DBWriteConnectFalse(userId)
 
     console.log(deckId);
 
+    
+
     con.query(
-     "UPDATE cards SET booster_id = 'kein Booster'  WHERE card_id = '" + cardId + "'", 
+     "UPDATE cards SET booster_id = NULL  WHERE card_id = '" + cardId + "'", 
     function (err, result) {
         if (err) throw err;
         }
