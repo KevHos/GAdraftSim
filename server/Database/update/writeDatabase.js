@@ -18,6 +18,7 @@ module.exports = {
   DBUpdateCard,
   DBUpdateBoosterOwner,
   DBUpdateUserState,
+  DBNextRound,
 
 
 
@@ -121,6 +122,15 @@ async function DBCreateLobby(lobbyName, playerName, lobbySize, edition, gameMode
   );
 }
 
+async function DBNextRound(lobbyId)
+{
+  con.query(
+    "UPDATE lobbys SET round_number = round_number + 1 WHERE lobby_id = '" + lobbyId + "'",
+    function (err, result) {
+      if (err) throw err;
+    })
+}
+
 async function DBDeleteLobby(lobbyName) {
   con.query(
     "DELETE FROM lobbys WHERE lobby_id = '" + lobbyName + "'",
@@ -192,7 +202,7 @@ async function DBDeleteBooster(boosterId) {
   );
 
   con.query(
-    "DELETE FROM booster WHERE booster_id = '" + boosterId + "'",
+    "DELETE FROM boosters WHERE booster_id = '" + boosterId + "'",
     function (err, result) {
       if (err) throw err;
     }

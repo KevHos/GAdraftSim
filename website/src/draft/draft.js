@@ -29,6 +29,7 @@ function Draft({ currentLobby }) {
             socket.emit("generateBooster", {currentUser : socket.id});
         });
 
+
         socket.on("booster_generated", (booster) => {
             setCurrentBooster(booster);
             console.log("Booster im Client: ", booster);
@@ -46,6 +47,13 @@ function Draft({ currentLobby }) {
             socket.off("booster_generated");
         };
     }, []);
+
+       //Logik noch nicht fertig.
+       useEffect(() => {
+        socket.on("end_draft", () => {
+            console.log("Ende des Drafts");
+        });
+})
 
     useEffect(() =>{
     socket.on("next_booster", (booster) =>{

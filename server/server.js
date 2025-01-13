@@ -67,6 +67,7 @@ const { DBCreateUser,
   DBUpdateCard,
   DBUpdateBoosterOwner,
   DBUpdateUserState,
+  DBNextRound,
   
  } = require('./Database/update/writeDatabase.js');
 
@@ -326,11 +327,30 @@ console.log("All players picked: ", allPlayersPicked);
     await DBUpdateBoosterOwner(lobby.lobby_id);
     
 
-    //Spielern die neuen Booster senden
+    //Spielern die neuen Booster senden oder ein neues generieren, falls die Booster leer sind
     for (let i = 0; i < players.length; i++) {
       booster = await DBReadBooster(players[i].player_id);
-      booster[0].cards = await DBReadBoosterCards(booster[0].booster_id);   
-      
+      booster[0].cards = await DBReadBoosterCards(booster[0].booster_id);
+
+      //Wenn das Booster leer ist, die Lobby um eine Runde hoch setzen, Booster löschen und neuen generieren
+      if (booster[0].cards.length === 0) {
+        
+        await DBDeleteBooster(booster[0].booster_id);
+
+        if(lobby.round_number == lobby.boosters)
+        {
+          socket.emit("end_draft", lobby.lobby_id);
+        }
+        else
+        {
+        await DBNextRound(lobby.lobby_id);
+        io.to(players[i].player_id).emit("start_draft", booster[0] );
+        }
+
+        
+      }
+
+      //Booster an die Spieler senden
       io.to(players[i].player_id).emit("next_booster", booster[0] );
     }
   }
