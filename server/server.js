@@ -51,7 +51,7 @@ setInterval(() => {
     }
   }
 
-}, 30000);
+}, 90000);
 
 //Methoden für das schreiben und auslesen der Datenbank
 const { DBCreateUser,
@@ -66,9 +66,19 @@ const { DBCreateUser,
   DBDeleteBooster,
   DBUpdateCard,
   DBUpdateBoosterOwner,
-  DBUpdateUserState
+  DBUpdateUserState,
+  
  } = require('./Database/update/writeDatabase.js');
-const { DBReadUser, DBReadLobby, DBReadDeck, } = require('./Database/update/readDatabase.js')
+
+const { 
+  DBReadUser,
+  DBReadLobby,
+  DBReadDeck, 
+  DBReadLobbyPlayers,
+  DBReadBooster,
+  DBReadBoosterCards,
+
+} = require('./Database/update/readDatabase.js')
 
 io.on("connection", (socket) => {
 
@@ -265,17 +275,66 @@ const {generateBooster} = require('./createBooster.js');
     }
   });
 
+  ///Draft Pick enthält die Logik für die Weitergabe der Booster
 socket.on("draft_pick", async (data) => {
   const { user_id, booster_id, card_id } = data;
 
   //Der Karte einen neuen User geben
   await DBUpdateCard(user_id, card_id);
   //User auf "picked" setzen
-  await DBUpdateUserState(user_id);
+  await DBUpdateUserState(user_id, "picked");
 
-//In draft_pick kommt wahrscheinlich die gesamte Logik zum Booster passen und tracken.
+  
+  
+  //Delay um die Datenbank zu aktualisieren
+  await new Promise(resolve => setTimeout(resolve, 100));
+
+  //Read User
+  const player = (await DBReadUser(user_id))[0];
+  //Read Lobby
+  const lobby = (await DBReadLobby(player.lobby_id))[0];
+
+  //Alle Spieler der Lobby auslesen
+  const players = await DBReadLobbyPlayers(lobby.lobby_id);
+
+  //Feststellen ob alle Spieler gepickt haben
+  let allPlayersPicked = true; 
+
+for (let i = 0; i < players.length; i++) {
+  let pick = await DBReadUser(players[i].player_id);
+ 
+  if (pick[0].draft_state === "not_picked") {
+    allPlayersPicked = false; 
+    break; 
+}}
+
+console.log("All players picked: ", allPlayersPicked);
 
 
+//Wenn alle Spieler gepickt haben, Booster zwischen Spielern tauschen und zusenden
+  if (allPlayersPicked == true) {
+    
+    
+    //Alle Spieler auf "not_picked" setzen
+   for (let i = 0; i < players.length; i++) {
+      await DBUpdateUserState(players[i].player_id, "not_picked");
+      allPlayersPicked = false;
+    }
+
+
+    //Booster umschreiben
+    await DBUpdateBoosterOwner(lobby.lobby_id);
+    
+
+    //Spielern die neuen Booster senden
+    for (let i = 0; i < players.length; i++) {
+      booster = await DBReadBooster(players[i].player_id);
+      booster[0].cards = await DBReadBoosterCards(booster[0].booster_id);   
+      
+      io.to(players[i].player_id).emit("next_booster", booster[0] );
+    }
+  }
+  
 });
 
 
@@ -284,19 +343,6 @@ socket.on("draft_pick", async (data) => {
 
 
 
-
-
-
-
-
-// Datenbankverbindung fehlt, gewählte Karte wird aber an den Server gesendet.
-draftRouter.post('/pick', (req, res) => {
-
-  const { user_id, booster_id, card_id } = req.body;
-
-  console.log(req.body);
-  res.json({ success: true });
-});
 
 
 

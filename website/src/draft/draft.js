@@ -47,6 +47,24 @@ function Draft({ currentLobby }) {
         };
     }, []);
 
+    useEffect(() =>{
+    socket.on("next_booster", (booster) =>{
+        setCurrentBooster(booster);
+        console.log("User: " + socket.id + " Booster im Client: ", booster);
+
+        setShowCardBacks(true); // Rücksseite der Karte beim Laden des Boosters anzeigen
+        // Karten nach 5 Sekunden umdrehen
+        setTimeout(() => {
+            setShowCardBacks(false);
+        }, 3000);
+
+    })
+
+        return () => {
+            socket.off("next_booster");
+        };
+}, []);
+
 
     useEffect(() => {
         // Wenn die Lobby geändert wird, dann setze ich Booster, derzeitig ausgewählte Karte und den Inhalt der Boxen auf 0

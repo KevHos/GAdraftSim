@@ -1,5 +1,5 @@
-//Datei für die API abrufe über den Server um die gewählte Karten an den Server/Datenbank zu senden
-//Mittlerweile fast überflüssig, dank der Socket.io Verbindung
+
+//Mittlerweileüberflüssig, dank der Socket.io Verbindung und nur noch als Beispiel hinterlegt
 
 const API_BASE_URL = "http://localhost:3500/api/draft";
 
