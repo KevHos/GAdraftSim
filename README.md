@@ -24,10 +24,11 @@ Dieses Projekt ist ein persönliches Hobby, das ich in meiner Freizeit neben der
 -Den Server über Javascript/Express aufgesetzt und CORS Problematik beseitigt.<br>
 -Socket.IO für Lobbys und den Chat integriert.<br>
 -Planung der Datenbankstruktur für den "StateoftheGame".<br>
-
-<h4>Teilweise oder noch nicht umgesetzt: </h4>
 -Automatisches Speichern und Abrufen von Karten-, Spieler-, Booster- und Lobby-Zuständen in der Datenbank.<br>
 -Implementierung des Boostertauschs zwischen Spielern und Übergabe der Karten in den Besitz der jeweiligen Spieler.<br>
+
+<h4>Teilweise oder noch nicht umgesetzt: </h4>
+-Datenbank in bestimmten Zeitintervallen aufräumen. <br>
 -Aufteilung des Drafts in Runden mit Echtzeit-Benachrichtigungen über Ereignisse.<br>
 -Einbau eines Timers zur Zeitbegrenzung während des Drafts.<br>
 -Anzeige der aktuellen Booster-Position und der verbleibenden Zeit.<br>
