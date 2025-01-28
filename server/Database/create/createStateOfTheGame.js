@@ -89,6 +89,7 @@ var sql = `
         draft_position INT, 
         connected BOOLEAN DEFAULT FALSE, 
         is_bot BOOLEAN DEFAULT FALSE,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         draft_state ENUM('picked', 'not_picked') NOT NULL,
         PRIMARY KEY (player_id), 
         FOREIGN KEY (lobby_id) REFERENCES lobbys(lobby_id)

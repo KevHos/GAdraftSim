@@ -29,8 +29,7 @@ function Header({ onJoinLobby, onLeaveLobby, onCreateLobby }) {
 
         const lobbyData = createLobbyData();
         onCreateLobby(lobbyData);
-        onLeaveLobby(lobbyData);
-        onJoinLobby(lobbyData);
+        
 
     };
 
@@ -39,7 +38,7 @@ function Header({ onJoinLobby, onLeaveLobby, onCreateLobby }) {
         e.preventDefault();
 
         const lobbyData = createLobbyData();
-        onLeaveLobby(lobbyData);
+        
         onJoinLobby(lobbyData);
     };
 

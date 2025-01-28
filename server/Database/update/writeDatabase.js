@@ -100,7 +100,7 @@ async function DBWriteDraftPosition(position, userId) {
 //Ich könnte sie "Switch-State" nennen und je nach derzeitigem State auf den anderen wechseln.
 async function DBUpdateUserState(user_id, state) {
   con.query(
-    "UPDATE players SET draft_state = '"+state+"' WHERE player_id = '" + user_id + "'",
+    "UPDATE players SET draft_state = '" + state + "' WHERE player_id = '" + user_id + "'",
     function (err, result) {
       if (err) throw err;
     })
@@ -122,8 +122,7 @@ async function DBCreateLobby(lobbyName, playerName, lobbySize, edition, gameMode
   );
 }
 
-async function DBNextRound(lobbyId)
-{
+async function DBNextRound(lobbyId) {
   con.query(
     "UPDATE lobbys SET round_number = round_number + 1 WHERE lobby_id = '" + lobbyId + "'",
     function (err, result) {
@@ -213,46 +212,44 @@ async function DBDeleteBooster(boosterId) {
 async function DBUpdateBoosterOwner(lobbyId) {
   const players = await DBReadLobbyPlayers(lobbyId);
   const lobby = await DBReadLobby(lobbyId);
-  
+
   // Temporäres Array für die Booster-Zuordnung
   let boosterMoves = [];
-  
+
   // Erst alle Booster und ihre neuen Besitzer ermitteln
   for (let i = 0; i < players.length; i++) {
     let playerId = players[i].player_id;
     let player = await DBReadUser(playerId);
     let currentPosition = player[0].draft_position;
     let booster = await DBReadBooster(playerId);
-    
+
     let nextPosition;
-    if(lobby.round_number % 2 == 0) {
+    if (lobby.round_number % 2 == 0) {
       // Gerade Runde - nach links
       nextPosition = currentPosition === 1 ? players.length : currentPosition - 1;
     } else {
       // Ungerade Runde - nach rechts
       nextPosition = currentPosition === players.length ? 1 : currentPosition + 1;
     }
-    
+
 
     let nextPlayer = await DBReadNextPlayer(lobbyId, nextPosition);
-    
-    
-    
+
     boosterMoves.push({
       boosterId: booster[0].booster_id,
       newOwnerId: nextPlayer[0].player_id
     });
   }
-  
+
   console.log("Verschiebe die Boooster......");
-  
+
   // Dann alle Booster auf einmal aktualisieren
   for (let move of boosterMoves) {
     await new Promise((resolve, reject) => {
       con.query(
         "UPDATE boosters SET player_id = ? WHERE booster_id = ?",
         [move.newOwnerId, move.boosterId],
-        function(err, result) {
+        function (err, result) {
           if (err) reject(err);
           resolve(result);
         }
@@ -261,7 +258,7 @@ async function DBUpdateBoosterOwner(lobbyId) {
   }
 }
 
- 
+
 
 //Table Cards
 async function DBUpdateCard(playerId, cardId) {

@@ -3,7 +3,6 @@
 
 import React, { useEffect, useState } from "react";
 import "../styles/draft.css";
-import { fetchBooster, pickCard } from "./api";
 import { socket } from '../utils/socket';
 import cardBack from '../assets/cardback.jpg';
 
