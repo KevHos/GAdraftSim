@@ -6,6 +6,7 @@ const { DBReadUser, DBReadLobby, DBReadDeck, DBReadBooster, DBReadLobbyPlayers, 
 
 module.exports = {
   DBCreateUser,
+  DBDeleteUser,
   DBWriteConnectFalse,
   DBWriteConnectTrue,
   DBCreateLobby,
@@ -68,6 +69,29 @@ async function DBLeaveUser(userId) {
     }
   );
 }
+
+async function DBDeleteUser(userId) {
+
+  DBDeleteBooster(userId);
+  
+  con.query(
+    "DELETE FROM decks WHERE player_id = '" + userId + "'",
+    function (err, result) {
+      if (err) throw err;
+    }
+  );
+
+  con.query(
+    "DELETE FROM players WHERE player_id = '" + userId + "'",
+    function (err, result) {
+      if (err) throw err;
+    }
+  );
+
+  
+}
+
+
 
 async function DBWriteConnectFalse(userId) {
   con.query(
@@ -266,7 +290,6 @@ async function DBUpdateCard(playerId, cardId) {
   const deck = await DBReadDeck(playerId)
   const deckId = deck[0].deck_id;
 
-  console.log(deckId);
 
 
 

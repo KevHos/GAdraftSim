@@ -10,6 +10,7 @@ module.exports = {
     DBReadNextPlayer,
     DBReadBooster,
     DBReadBoosterCards,
+    DBReadAllUsers,
 }
 
 var con = mysql.createConnection({
@@ -34,6 +35,21 @@ async function DBReadUser(userId) {
         });
     })
 }
+
+async function DBReadAllUsers()
+{
+    return new Promise((resolve, reject) => {
+        con.query("SELECT * FROM players", function (err, result) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result);
+            }
+        }
+    );
+});
+}
+
 
 async function DBReadNextPlayer(lobbyId, nextPosition) {
     return new Promise((resolve, reject) => {
