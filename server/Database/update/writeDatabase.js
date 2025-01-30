@@ -25,13 +25,17 @@ module.exports = {
 
 }
 
+const{dbHost,dbUser, dbPassword} = require('../../server.js')
+
 var con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "stateOfTheGame",
+    host: dbHost,
+    user: dbUser,
+    password: dbPassword,
+    database: "stateOfTheGame",
 
 });
+
+
 //Tables Players    
 async function DBCreateUser(userId) {
 

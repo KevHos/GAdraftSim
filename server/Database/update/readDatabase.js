@@ -13,10 +13,12 @@ module.exports = {
     DBReadAllUsers,
 }
 
+const{dbHost,dbUser, dbPassword} = require('../../server.js')
+
 var con = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
+    host: dbHost,
+    user: dbUser,
+    password: dbPassword,
     database: "stateOfTheGame",
 
 });

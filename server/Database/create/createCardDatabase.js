@@ -173,12 +173,16 @@ async function printToDatabase() {
 
     var mysql = require('mysql');
 
-    var con = mysql.createConnection({
-        host: "localhost",
-        user: "root",
-        password: "",
+    const{dbHost,dbUser, dbPassword} = require('../../server.js')
 
+    var con = mysql.createConnection({
+        host: dbHost,
+        user: dbUser,
+        password: dbPassword,
+    
     });
+
+
     //Connect 
     con.connect(function (err) {
         if (err) throw err;

@@ -4,38 +4,60 @@ const cors = require('cors');
 const path = require('path');
 const helmet = require('helmet');
 
+//Variablen für die Adresse und Ports
+const domain = 'http://localhost:'
+const frontPort = "3000";
+const backPort = "3500";
+
+const frontAdress = `${domain}${frontPort}`;
+const backAdress = `${domain}${backPort}`;
+
+//Variablen für die Datenbank
+const dbHost = "localhost";
+const dbUser = "root";
+const dbPassword = "";
+
+
+//Dem Socket auf dem Client kann ich diese Variable derzeit nicht geben,
+//da ich nicht weiß wie ich dem Socket in der React App diese zur verfügung stellen kann
 
 
 //Erlaubt Cors in der gesamtem Expresss App
 app.use(cors())
 //Helmet fügt Sicherheitsfeatures hinzu
 app.use(helmet());
-
+//Erlaubt das Parsen von JSON und URL-encoded Daten
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 //Setzt Website/public als root Folder für den Client
 app.use(express.static('Website/public'));
 
-//SocketIO
+//Startet den Server
 const httpServer = require("http").createServer(app);
 
 //Cors für SocketIO Frontend in React, die komplett unabhängig vom Express Cors ist
 const options = {
   cors: {
-    origin: "http://localhost:3000/",
+    origin: frontAdress,
     methods: ["GET", "POST"],
     credentials: true
   }
 };
+///SocketIO wird mit dem Server verbunden
 const io = require("socket.io")(httpServer, options);
 
+//Exportiert die Variablen für die anderen Dateien
 module.exports
 = {
-  io
+  io,
+  frontAdress,
+  backAdress,
+  backPort,
+  frontPort,
+  dbHost,
+  dbUser,
+  dbPassword,
 };
-
-//Map aller aktiven Lobbys
-const activeLobbies = new Map();
 
 //Methoden für das schreiben und auslesen der Datenbank
 const { 
@@ -80,21 +102,18 @@ const{cleanDatabase} = require('./functions/cleanDatabase.js')
 
 // Löscht alle 60 min leere Lobbys und alle User die älter als 24h sind
 setInterval(async () => {
-
-
 cleanDatabase();
-
 }, 1000 * 60 * 60);
 
 
-
+//Wird ausgeführt wenn ein Client verbunden wird
 io.on("connection", (socket) => {
 
   console.log("User connected:", socket.id);
   DBCreateUser(socket.id);
 
 
-
+  //Erstelle Lobby
   socket.on("create_lobby", async (data) => {
     const { lobbyName, playerName, playerID, edition, gameMode, lobbySize, bots, boosters, timer } = data;
 
@@ -124,7 +143,7 @@ io.on("connection", (socket) => {
   });
 
 
-
+  //Verbindet sich zu einer Lobby
   socket.on("join_lobby", async (data) => {
 
 
@@ -374,7 +393,6 @@ app.delete("/*", (req, res) => {
 
 
 //Port des Servers
-const PORT = 3500;
-httpServer.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+httpServer.listen(backPort, () => {
+  console.log(`Server running on port ${backPort}`);
 });
