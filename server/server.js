@@ -5,22 +5,21 @@ const path = require('path');
 const helmet = require('helmet');
 
 //Variablen für die Adresse und Ports
-const domain = 'http://localhost:'
+const domain = 'http://localhost:';
 const frontPort = "3000";
 const backPort = "3500";
 
 const frontAdress = `${domain}${frontPort}`;
 const backAdress = `${domain}${backPort}`;
 
+/* Dem Socket auf dem Client kann ich diese Variable derzeit nicht geben,
+da ich nicht weiß wie ich dem Socket in der React App diese zur verfügung stellen kann
+ */
+
 //Variablen für die Datenbank
 const dbHost = "localhost";
 const dbUser = "root";
 const dbPassword = "";
-
-
-//Dem Socket auf dem Client kann ich diese Variable derzeit nicht geben,
-//da ich nicht weiß wie ich dem Socket in der React App diese zur verfügung stellen kann
-
 
 //Erlaubt Cors in der gesamtem Expresss App
 app.use(cors())

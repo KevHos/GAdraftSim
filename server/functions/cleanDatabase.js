@@ -19,7 +19,7 @@ async function cleanDatabase() {
     const lobbys = await DBReadAllLobbys();
     const allPlayers = await DBReadAllUsers();
 
-    console.log("Clean Database:");
+    console.log("Cleaning Database:");
 
 
     for (let i = 0; i < lobbys.length; i++) {

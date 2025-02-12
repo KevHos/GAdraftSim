@@ -34,10 +34,10 @@ function Draft({ currentLobby }) {
             console.log("Booster im Client: ", booster);
             
             setShowCardBacks(true); // Rücksseite der Karte beim Laden des Boosters anzeigen
-            // Karten nach 5 Sekunden umdrehen
+            // Karten nach 1 Sekunden umdrehen
             setTimeout(() => {
                 setShowCardBacks(false);
-            }, 3000);
+            }, 1000);
         });
 
         return () => {
@@ -59,11 +59,13 @@ function Draft({ currentLobby }) {
         setCurrentBooster(booster);
         console.log("User: " + socket.id + " Booster im Client: ", booster);
 
-        setShowCardBacks(true); // Rücksseite der Karte beim Laden des Boosters anzeigen
-        // Karten nach 5 Sekunden umdrehen
+        // Rücksseite der Karte beim Laden des Boosters anzeigen
+        setShowCardBacks(true);
+
+        // Karten nach 1 Sekunden umdrehen
         setTimeout(() => {
             setShowCardBacks(false);
-        }, 3000);
+        }, 1000);
 
     })
 
@@ -102,12 +104,6 @@ function Draft({ currentLobby }) {
 
             // Karte in die passende Box hinzufügen
             addCardToBox(pickedCard);
-
-            // Entferne nur die aktuelle Kartee aus dem aktuellen Booster
-            /* setCurrentBooster((prev) => ({
-                ...prev,
-                cards: prev.cards.filter((card) => card.card_id !== selectedCardId),
-            })); */
 
             // Das gesamte Booster löschen
             setSelectedCardId(null);

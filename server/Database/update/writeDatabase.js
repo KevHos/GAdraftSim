@@ -20,9 +20,6 @@ module.exports = {
   DBUpdateBoosterOwner,
   DBUpdateUserState,
   DBNextRound,
-
-
-
 }
 
 const{dbHost,dbUser, dbPassword} = require('../../server.js')
@@ -35,135 +32,89 @@ var con = mysql.createConnection({
 
 });
 
+const { query } = require('./mysqlConnection.js');
+
 
 //Tables Players    
-async function DBCreateUser(userId) {
-
-  con.query(
-    "INSERT INTO players (player_id, connected, is_Bot, draft_state) VALUES ('" + userId + "', TRUE, FALSE, 'not_picked')",
-    function (err, result) {
-      if (err) throw err;
-    }
+async function DBCreateUser(userId) 
+{
+  await query
+  (
+    "INSERT INTO players (player_id, connected, is_Bot, draft_state) VALUES (?, TRUE, FALSE, 'not_picked')",
+    [userId]
   );
 
   const deckId = uuidv4();
-
-  con.query(
-    "INSERT INTO decks (deck_id, player_id) VALUES ('" + deckId + "', '" + userId + "')",
-    function (err, result) {
-      if (err);
-    }
-  );
+  await query("INSERT INTO decks (deck_id, player_id) VALUES (?, ?)", [
+    deckId,
+    userId,
+  ]);
 }
 
-async function DBJoinUser(userId, lobbyId, playerName) {
-  con.query(
-    "UPDATE players SET lobby_id = '" + lobbyId + "', name = '" + playerName + "' WHERE player_id = '" + userId + "'",
-    function (err, result) {
-      if (err) throw err;
-    }
-  );
+async function DBJoinUser(userId, lobbyId, playerName) 
+{
+  await query("UPDATE players SET lobby_id = ? , name = ? WHERE player_id = ?",[
+    lobbyId, 
+    playerName, 
+    userId
+  ]);
+   
 }
 
-async function DBLeaveUser(userId) {
-  con.query(
-    "UPDATE players SET lobby_id = NULL WHERE player_id = '" + userId + "'",
-    function (err, result) {
-      if (err) throw err;
-    }
-  );
+async function DBLeaveUser(userId) 
+{
+  await query("UPDATE players SET lobby_id = NULL WHERE player_id = ?)",[userId]);
 }
 
 async function DBDeleteUser(userId) {
 
-  DBDeleteBooster(userId);
+  await DBDeleteBooster(userId);
   
-  con.query(
-    "DELETE FROM decks WHERE player_id = '" + userId + "'",
-    function (err, result) {
-      if (err) throw err;
-    }
-  );
+  await query("DELETE FROM decks WHERE player_id = ?",[userId]);
 
-  con.query(
-    "DELETE FROM players WHERE player_id = '" + userId + "'",
-    function (err, result) {
-      if (err) throw err;
-    }
-  );
-
+  await query("DELETE FROM players WHERE player_id = ?",[userId]);
   
 }
 
-
-
-async function DBWriteConnectFalse(userId) {
-  con.query(
-    "UPDATE players SET connected = FALSE WHERE player_id = '" + userId + "'",
-    function (err, result) {
-      if (err) throw err;
-    })
+async function DBWriteConnectFalse(userId) 
+{
+  await query("UPDATE players SET connected = FALSE WHERE player_id = ?", [userId]); 
 }
 
-async function DBWriteConnectTrue(userId) {
-  con.query(
-    "UPDATE players SET connected = True WHERE player_id = '" + userId + "'",
-    function (err, result) {
-      if (err) throw err;
-    })
+async function DBWriteConnectTrue(userId) 
+{
+  await query("UPDATE players SET connected = True WHERE player_id = ?", [userId]);
 }
 
-async function DBWriteDraftPosition(position, userId) {
-
+async function DBWriteDraftPosition(position, userId) 
+{
   position++;
 
-  con.query(
-    "UPDATE players SET draft_position = '" + position + "' WHERE player_id = '" + userId + "'",
-    function (err, result) {
-      if (err) throw err;
-    })
+  await query("UPDATE players SET draft_position = ? WHERE player_id = ?", [position, userId]);
 }
 
-//Unbedingt noch mal anfassen, da der Name irreführend ist.
-//Ich könnte sie "Switch-State" nennen und je nach derzeitigem State auf den anderen wechseln.
-async function DBUpdateUserState(user_id, state) {
-  con.query(
-    "UPDATE players SET draft_state = '" + state + "' WHERE player_id = '" + user_id + "'",
-    function (err, result) {
-      if (err) throw err;
-    })
+async function DBUpdateUserState(userId, state) 
+{
+  await query("UPDATE players SET draft_state = ? WHERE player_id = ?", [state, userId]);
 }
-
-
-
-
 
 //Table Lobbys
 
-async function DBCreateLobby(lobbyName, playerName, lobbySize, edition, gameMode, bots, boosters, timer) {
-  var sqlInsert = `INSERT INTO lobbys (lobby_id, state, created_at, host_name, max_players, edition_id, gamemode, bots, time, round_number, boosters)
-    VALUES (?, 'open', NOW(), ?,?,?,?,?,?, 1, ?)`;
-  var values = [lobbyName, playerName, lobbySize, edition, gameMode, bots, timer, boosters];
-  con.query(sqlInsert, values, function (err, result) {
-    if (err) throw err;
-  }
-  );
+async function DBCreateLobby(lobbyName, playerName, lobbySize, edition, gameMode, bots, boosters, timer) 
+{
+  await query(`INSERT INTO lobbys (lobby_id, state, created_at, host_name, max_players, edition_id, gamemode, bots, time, round_number, boosters)
+  VALUES (?, 'open', NOW(), ?,?,?,?,?,?, 1, ?)`, [lobbyName, playerName, lobbySize, edition, gameMode, bots, timer, boosters]);
+
 }
 
-async function DBNextRound(lobbyId) {
-  con.query(
-    "UPDATE lobbys SET round_number = round_number + 1 WHERE lobby_id = '" + lobbyId + "'",
-    function (err, result) {
-      if (err) throw err;
-    })
+async function DBNextRound(lobbyId) 
+{
+  await query("UPDATE lobbys SET round_number = round_number + 1 WHERE lobby_id = ?", [lobbyId]);
 }
 
 async function DBDeleteLobby(lobbyName) {
-  con.query(
-    "DELETE FROM lobbys WHERE lobby_id = '" + lobbyName + "'",
-    function (err, result) {
-      if (err) throw err;
-    })
+  await query("DELETE FROM lobbys WHERE lobby_id = ?", [lobbyName]);
+  
 }
 
 //Table Booster und Cards
@@ -183,13 +134,9 @@ async function DBCreateBooster(booster) {
 
 
 
-  con.query(
-    "INSERT INTO boosters (booster_id, player_id, state, edition_id, position) VALUES ('" + boosterId + "', '" + playerId + "', '" + state + "', '" + editionId + "', 1)",
-    function (err, result) {
-      if (err) throw err;
-    }
-  );
-
+  await query("INSERT INTO boosters (booster_id, player_id, state, edition_id, position) VALUES (?,?,?,?,1)",
+  [boosterId, playerId, state, editionId]);
+    
   for (let i = 0; i < booster.cards.length; i++) {
 
     var card_id = booster.cards[i].card_id;
@@ -204,13 +151,8 @@ async function DBCreateBooster(booster) {
     var deck_id = "NULL";
     var booster_id = booster.booster_id;
 
-    con.query(
-      "INSERT INTO cards (card_id, uu_id, name, memory, reserve, element, rarity, slug_edition, picture, deck_id, booster_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?)",
-      [card_id, uu_id, name, memory, reserve, element, rarity, slug_edition, picture, booster_id],
-      function (err, result) {
-        if (err) throw err;
-      }
-    );
+    await query("INSERT INTO cards (card_id, uu_id, name, memory, reserve, element, rarity, slug_edition, picture, deck_id, booster_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?)",
+    [card_id, uu_id, name, memory, reserve, element, rarity, slug_edition, picture, booster_id]);
 
   }
 }
@@ -221,22 +163,12 @@ async function DBCreateBooster(booster) {
 async function DBDeleteBooster(boosterId) {
 
   // Möglicherweise irrelevant, weil ich nur leere Boosters löschen will
-  con.query(
-    "DELETE FROM cards WHERE booster_id = '" + boosterId + "'",
-    function (err, result) {
-      if (err) throw err;
-    }
-  );
+  await query("DELETE FROM cards WHERE booster_id = ?", [boosterId]);
 
-  con.query(
-    "DELETE FROM boosters WHERE booster_id = '" + boosterId + "'",
-    function (err, result) {
-      if (err) throw err;
-    }
-  );
-
-
+  await query("DELETE FROM boosters WHERE booster_id = ?", [boosterId]);
 }
+
+
 async function DBUpdateBoosterOwner(lobbyId) {
   const players = await DBReadLobbyPlayers(lobbyId);
   const lobby = await DBReadLobby(lobbyId);
@@ -273,16 +205,8 @@ async function DBUpdateBoosterOwner(lobbyId) {
 
   // Dann alle Booster auf einmal aktualisieren
   for (let move of boosterMoves) {
-    await new Promise((resolve, reject) => {
-      con.query(
-        "UPDATE boosters SET player_id = ? WHERE booster_id = ?",
-        [move.newOwnerId, move.boosterId],
-        function (err, result) {
-          if (err) reject(err);
-          resolve(result);
-        }
-      );
-    });
+   await query("UPDATE boosters SET player_id = ? WHERE booster_id = ?",
+    [move.newOwnerId, move.boosterId]);
   }
 }
 
@@ -294,22 +218,9 @@ async function DBUpdateCard(playerId, cardId) {
   const deck = await DBReadDeck(playerId)
   const deckId = deck[0].deck_id;
 
+  await query("UPDATE cards SET booster_id = NULL  WHERE card_id = ?", [cardId]);
 
-
-
-  con.query(
-    "UPDATE cards SET booster_id = NULL  WHERE card_id = '" + cardId + "'",
-    function (err, result) {
-      if (err) throw err;
-    }
-  );
-
-  con.query(
-    "UPDATE cards SET deck_id = '" + deckId + "'  WHERE card_id = '" + cardId + "'",
-    function (err, result) {
-      if (err) throw err;
-    }
-  );
-
+  await query("UPDATE cards SET deck_id = ? WHERE card_id = ?", [deckId ,cardId]);
 }
+
 

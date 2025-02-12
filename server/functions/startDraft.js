@@ -27,13 +27,9 @@ async function  startDraft(lobbyName) {
   const players = await DBReadLobbyPlayers(lobbyName);
 
 
-  //Delay, weil die Datenbank noch nicht aktualisiert ist
-  await new Promise(resolve => setTimeout(resolve, 1000));
-
-
   //Checken ob die Lobby zusammen mit Bots(Noch nicht integriert) voll ist
-  const totalPlayers = players.length + parseInt(lobby.bots);
-  const targetSize = lobby.max_players;
+  const totalPlayers = await players.length + parseInt(lobby.bots);
+  const targetSize = await lobby.max_players;
 
   console.log("Alle Spieler: " + totalPlayers);
   console.log("Maximale Spieleranzahl: " + targetSize);
@@ -46,7 +42,7 @@ async function  startDraft(lobbyName) {
 
     }
 
-    console.log("Lobby " + lobby.name + " is full. Starting draft....");
+    console.log("Lobby " + lobbyName + " is full. Starting draft....");
     let countdown = 5;
 
     const timer = setInterval(() => {
