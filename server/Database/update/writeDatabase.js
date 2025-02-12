@@ -63,7 +63,7 @@ async function DBJoinUser(userId, lobbyId, playerName)
 
 async function DBLeaveUser(userId) 
 {
-  await query("UPDATE players SET lobby_id = NULL WHERE player_id = ?)",[userId]);
+  await query("UPDATE players SET lobby_id = NULL WHERE player_id = ?",[userId]);
 }
 
 async function DBDeleteUser(userId) {
