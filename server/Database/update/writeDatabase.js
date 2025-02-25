@@ -55,14 +55,9 @@ async function DBLeaveUser(userId)
   await query("UPDATE players SET lobby_id = NULL WHERE player_id = ?",[userId]);
 }
 
-async function DBDeleteUser(userId) {
-
-  await DBDeleteBooster(userId);
-  
-  await query("DELETE FROM decks WHERE player_id = ?",[userId]);
-
+async function DBDeleteUser(userId) 
+{
   await query("DELETE FROM players WHERE player_id = ?",[userId]);
-  
 }
 
 async function DBWriteConnectFalse(userId) 

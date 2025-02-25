@@ -53,13 +53,10 @@ if (err) throw err;
 console.log("Table editions created");
 })
 
-//Kann ich sicherlich noch in einen einzelnen Query umwandeln, läuft aber derzeit und muss nur einmalig aufgerufen werden
-con.query("INSERT INTO editions (edition_id) VALUES('doaalter')");
-con.query("INSERT INTO editions (edition_id) VALUES('ftc')");
-con.query("INSERT INTO editions (edition_id) VALUES('alc')");
-con.query("INSERT INTO editions (edition_id) VALUES('mrc')");
-con.query("INSERT INTO editions (edition_id) VALUES('amb')");
-
+//Zukunftig automatisieren, wenn ich mehr Editionen einbinde.
+con.query(
+  "INSERT INTO editions (edition_id) VALUES ('doaalter'), ('ftc'), ('alc'), ('mrc'), ('amb')"
+);
 
 
     var sql = `
@@ -111,9 +108,9 @@ var sql = `
         edition_id VARCHAR(255), 
         position INT,
         PRIMARY KEY (booster_id), 
-        FOREIGN KEY (player_id) REFERENCES players(player_id), 
+        FOREIGN KEY (player_id) REFERENCES players(player_id) ON DELETE CASCADE, 
         FOREIGN KEY (edition_id) REFERENCES editions(edition_id)
-    )
+    ) ENGINE=InnoDB
 `;
 con.query(sql, function (err, result) {
     if (err) throw err;
@@ -125,8 +122,8 @@ var sql = `
         deck_id VARCHAR(255) UNIQUE, 
         player_id VARCHAR(255), 
         PRIMARY KEY (deck_id), 
-        FOREIGN KEY (player_id) REFERENCES players(player_id)
-    )
+        FOREIGN KEY (player_id) REFERENCES players(player_id) ON DELETE CASCADE
+    ) ENGINE=InnoDB
 `;
 con.query(sql, function (err, result) {
     if (err) throw err;
@@ -147,9 +144,9 @@ var sql = `
         deck_id VARCHAR(255), 
         booster_id VARCHAR(255), 
         PRIMARY KEY (card_id), 
-        FOREIGN KEY (deck_id) REFERENCES decks(deck_id), 
-        FOREIGN KEY (booster_id) REFERENCES boosters(booster_id)
-    )
+        FOREIGN KEY (deck_id) REFERENCES decks(deck_id) ON DELETE CASCADE,
+        FOREIGN KEY (booster_id) REFERENCES boosters(booster_id) ON DELETE CASCADE
+    ) ENGINE=InnoDB
 `;
 con.query(sql, function (err, result) {
     if (err) throw err;
