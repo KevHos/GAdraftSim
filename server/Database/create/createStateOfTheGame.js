@@ -2,7 +2,7 @@
 
 async function printToDatabase() {
 
-    var mysql = require('mysql');
+    var mysql = require('mysql2');
 
     const{dbHost,dbUser, dbPassword} = require('../../server.js')
 
@@ -105,7 +105,7 @@ con.query(sql, function (err, result) {
 
 var sql = `
     CREATE TABLE boosters (
-        booster_id VARCHAR(255) NULL, 
+        booster_id VARCHAR(255) UNIQUE, 
         player_id VARCHAR(255), 
         state ENUM('active', 'empty') NOT NULL, 
         edition_id VARCHAR(255), 
@@ -122,7 +122,7 @@ con.query(sql, function (err, result) {
 
 var sql = `
     CREATE TABLE decks (
-        deck_id VARCHAR(255) NULL, 
+        deck_id VARCHAR(255) UNIQUE, 
         player_id VARCHAR(255), 
         PRIMARY KEY (deck_id), 
         FOREIGN KEY (player_id) REFERENCES players(player_id)

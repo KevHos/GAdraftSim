@@ -27,15 +27,16 @@ class BoosterPack{
     state = "active";
 }
 
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const { v4: uuidv4 } = require('uuid');
 
+const {dbHost, dbUser, dbPassword} = require('../server.js')
 // Database Query Function
 async function readOutDatabase(rarity, amount) {
     const con = mysql.createConnection({
-        host: "localhost",
-        user: "root",
-        password: "",
+        host: dbHost,
+        user: dbUser,
+        password: dbPassword,
         database: "cardDatabase",
     });
 try{

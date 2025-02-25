@@ -171,7 +171,7 @@ async function printToDatabase() {
 
     await generateCards();
 
-    var mysql = require('mysql');
+    var mysql = require('mysql2');
 
     const{dbHost,dbUser, dbPassword} = require('../../server.js')
 

@@ -19,7 +19,7 @@ da ich nicht weiß wie ich dem Socket in der React App diese zur verfügung stel
 //Variablen für die Datenbank
 const dbHost = "localhost";
 const dbUser = "root";
-const dbPassword = "";
+const dbPassword = "rootpw";
 
 //Erlaubt Cors in der gesamtem Expresss App
 app.use(cors())

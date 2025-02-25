@@ -22,18 +22,7 @@ module.exports = {
   DBNextRound,
 }
 
-const{dbHost,dbUser, dbPassword} = require('../../server.js')
-
-var con = mysql.createConnection({
-    host: dbHost,
-    user: dbUser,
-    password: dbPassword,
-    database: "stateOfTheGame",
-
-});
-
 const { query } = require('./mysqlConnection.js');
-
 
 //Tables Players    
 async function DBCreateUser(userId) 
