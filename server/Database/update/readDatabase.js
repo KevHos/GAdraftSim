@@ -49,9 +49,9 @@ async function DBReadLobby(lobbyId)
     return await query("SELECT * FROM lobbys WHERE lobby_id = ?", [lobbyId]);
 }
 
-async function DBReadLobbyPlayers(lobbyId) 
+async function DBReadLobbyPlayers(userId) 
 {
-    return await query("SELECT * FROM players WHERE lobby_id = ?", [lobbyId]);
+    return await query ("SELECT * FROM players WHERE lobby_id = (SELECT lobby_id from players WHERE player_id = ?)", [userId]);
 }
 
 async function DBReadBooster(playerId) 

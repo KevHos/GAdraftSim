@@ -133,7 +133,7 @@ io.on("connection", (socket) => {
       io.to(lobbyName).emit("chat_message", `${playerName} created the lobby ${lobbyName}`);
 
       //Den Draft starten, sofern die Lobby voll ist.
-      startDraft(lobbyName);
+      startDraft(lobbyName, playerID);
     }
     else {
       io.to(playerID).emit("lobby_error", "Lobby already exists");
@@ -145,11 +145,10 @@ io.on("connection", (socket) => {
   //Verbindet sich zu einer Lobby
   socket.on("join_lobby", async (data) => {
 
-
     const { lobbyName, playerName, playerID } = data;
 
     const lobby = (await DBReadLobby(lobbyName))[0];
-    let players = await DBReadLobbyPlayers(lobbyName);
+    const players = await DBReadLobbyPlayers(playerID);
 
     if (lobby == undefined) {
       io.to(playerID).emit("lobby_error", "Lobby does not exist");
@@ -166,7 +165,8 @@ io.on("connection", (socket) => {
       socket.join(lobbyName);
       io.to(lobbyName).emit("chat_message", `${playerName} joined the lobby  ${lobbyName}`);
 
-      startDraft(lobbyName);
+
+      startDraft(lobbyName, playerID);
     }
 
   });
@@ -256,13 +256,8 @@ io.on("connection", (socket) => {
     //Delay um die Datenbank zu aktualisieren
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    //Read User
-    const player = (await DBReadUser(user_id))[0];
-    //Read Lobby
-    const lobby = (await DBReadLobby(player.lobby_id))[0];
-
     //Alle Spieler der Lobby auslesen
-    const players = await DBReadLobbyPlayers(lobby.lobby_id);
+    const players = await DBReadLobbyPlayers(user_id);
 
     //Feststellen ob alle Spieler gepickt haben
     let allPlayersPicked = true;

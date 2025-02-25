@@ -18,15 +18,12 @@ const {
 } = require('../Database/update/writeDatabase.js')
 
 
-async function  startDraft(lobbyName) {
-
-  console.log("Draft Funktion wird ausgeführt in der Lobby : " + lobbyName);
+async function  startDraft(lobbyName, userId) {
 
   const lobby = (await DBReadLobby(lobbyName))[0];
 
-  const players = await DBReadLobbyPlayers(lobbyName);
-
-
+  const players = await DBReadLobbyPlayers(userId);
+  
   //Checken ob die Lobby zusammen mit Bots(Noch nicht integriert) voll ist
   const totalPlayers = await players.length + parseInt(lobby.bots);
   const targetSize = await lobby.max_players;
@@ -39,7 +36,6 @@ async function  startDraft(lobbyName) {
 
     for (let i = 0; i < players.length; i++) {
       DBWriteDraftPosition(i, players[i].player_id);
-
     }
 
     console.log("Lobby " + lobbyName + " is full. Starting draft....");
